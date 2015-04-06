@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,8 +14,10 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 
@@ -139,7 +142,22 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
-	@Override
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Toast.makeText(this,"come on 1",Toast.LENGTH_SHORT);
+        switch(item.getItemId())
+        {
+            case R.id.login:
+                Toast.makeText(this,"come on",Toast.LENGTH_SHORT);
+                startActivity(new Intent(this,LoginActivity.class));
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		if (featureId == Window.FEATURE_ACTION_BAR && menu != null) {
 			if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
@@ -166,5 +184,6 @@ public class MainActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 	}
+
 
 }

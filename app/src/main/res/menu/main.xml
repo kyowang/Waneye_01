@@ -19,6 +19,14 @@
         android:icon="@drawable/user_cccccc_64"
         android:title="@string/action_personal"/>
     <item
+        android:id="@+id/action_login"
+        android:icon="@drawable/user_cccccc_64"
+        android:title="@string/action_login"/>
+    <item
+        android:id="@+id/action_register"
+        android:icon="@drawable/user_cccccc_64"
+        android:title="@string/action_register"/>
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ofm_setting_icon"
         android:title="@string/action_settings"/>
