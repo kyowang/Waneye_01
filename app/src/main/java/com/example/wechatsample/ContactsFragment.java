@@ -33,7 +33,7 @@ public class ContactsFragment extends Fragment {
 		v.setLayoutParams(params);
 		v.setLayoutParams(params);
 		v.setGravity(Gravity.CENTER);
-		v.setText("通讯录界面");
+		v.setText("消息界面");
 		v.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
 		fl.addView(v);
 		return fl;

@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.ViewSwitcher;
 
 /**
  * 聊天Fragment的界面
@@ -19,7 +22,7 @@ import android.widget.FrameLayout.LayoutParams;
  * 
  * @author guolin
  */
-public class ChatFragment extends Fragment {
+public class ChatFragment extends Fragment implements ViewSwitcher.ViewFactory {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -33,9 +36,26 @@ public class ChatFragment extends Fragment {
 		v.setLayoutParams(params);
 		v.setLayoutParams(params);
 		v.setGravity(Gravity.CENTER);
-		v.setText("聊天界面");
+		v.setText("主界面");
 		v.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
 		fl.addView(v);
 		return fl;
+        //ImageSwitcher mSwitcher = (ImageSwitcher) getActivity().findViewById(R.id.imageSwitcher);
+        //mSwitcher.setFactory(this);
+        //return inflater.inflate(R.layout.first_fragment, container, false );
 	}
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+    }
+    public View makeView() {
+        ImageView image = new ImageView(getActivity().getBaseContext());
+        image.setMinimumHeight(200);
+        image.setMinimumWidth(200);
+        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        image.setLayoutParams(new ImageSwitcher.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        return image;
+    }
+
 }
