@@ -3,6 +3,7 @@ package com.example.wechatsample;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,14 +24,12 @@ public class LoginActivity extends Activity {
         username = (EditText)findViewById(R.id.userName);
         passwd = (EditText)findViewById(R.id.password);
         login = (Button)findViewById(R.id.login);
-        Toast.makeText(getApplicationContext(),"onCreate",Toast.LENGTH_SHORT);
         login.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view) {
                 String um = username.getText().toString();
                 String pw = passwd.getText().toString();
-                Toast.makeText(getApplicationContext(),"onClick of button",Toast.LENGTH_SHORT);
             }
         });
     }
