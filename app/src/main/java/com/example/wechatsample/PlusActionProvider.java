@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.ActionProvider;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -29,6 +30,7 @@ public class PlusActionProvider extends ActionProvider {
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
+                        context.startActivity(new Intent(context,LoginActivity.class));
 						return true;
 					}
 				});
