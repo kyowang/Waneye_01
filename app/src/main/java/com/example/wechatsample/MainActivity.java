@@ -150,11 +150,11 @@ public class MainActivity extends FragmentActivity {
             case R.id.login:
                 Toast.makeText(this,"come on",Toast.LENGTH_SHORT);
                 startActivity(new Intent(this,LoginActivity.class));
-                break;
+                return true;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
