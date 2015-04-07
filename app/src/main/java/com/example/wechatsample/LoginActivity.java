@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class LoginActivity extends Activity {
@@ -22,12 +23,14 @@ public class LoginActivity extends Activity {
         username = (EditText)findViewById(R.id.userName);
         passwd = (EditText)findViewById(R.id.password);
         login = (Button)findViewById(R.id.login);
+        Toast.makeText(getApplicationContext(),"onCreate",Toast.LENGTH_SHORT);
         login.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view) {
-                Editable um = username.getText();
-                Editable pw = passwd.getText();
+                String um = username.getText().toString();
+                String pw = passwd.getText().toString();
+                Toast.makeText(getApplicationContext(),"onClick of button",Toast.LENGTH_SHORT);
             }
         });
     }
