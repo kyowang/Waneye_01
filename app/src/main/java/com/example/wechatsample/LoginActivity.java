@@ -3,11 +3,13 @@ package com.example.wechatsample;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class LoginActivity extends Activity {
@@ -26,8 +28,8 @@ public class LoginActivity extends Activity {
         {
             @Override
             public void onClick(View view) {
-                Editable um = username.getText();
-                Editable pw = passwd.getText();
+                String um = username.getText().toString();
+                String pw = passwd.getText().toString();
             }
         });
     }
