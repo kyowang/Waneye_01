@@ -18,7 +18,6 @@
     <string name="plus_scan">扫一扫</string>
     <string name="plus_take_photo">拍照分享</string>
     <string name="title_activity_login">登录</string>
-
     <string name="hello_world">Hello world!</string>
 
 </resources>

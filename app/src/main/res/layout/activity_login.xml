@@ -47,7 +47,6 @@
             android:text="登录"
             android:id="@+id/login"
             android:layout_gravity="center_horizontal"
-            android:background="#ff8effbe"
             android:clickable="true"
             android:enabled="true" />
 

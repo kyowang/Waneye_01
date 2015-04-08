@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -28,6 +29,7 @@ public class LoginActivity extends Activity {
         {
             @Override
             public void onClick(View view) {
+                //view.setBackgroundColor(Color.GRAY);
                 String um = username.getText().toString();
                 String pw = passwd.getText().toString();
             }
