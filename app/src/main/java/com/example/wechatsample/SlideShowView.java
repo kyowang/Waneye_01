@@ -1,45 +1,37 @@
 package com.example.wechatsample;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.concurrent.Executors;
+        import java.util.concurrent.ScheduledExecutorService;
+        import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
-import android.widget.Gallery;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.FrameLayout.LayoutParams;
-import android.widget.ViewSwitcher;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+        import android.app.Activity;
+        import android.content.Context;
+        import android.graphics.drawable.Drawable;
+        import android.os.Handler;
+        import android.os.Message;
+        import android.os.Parcelable;
+        import android.support.v4.view.PagerAdapter;
+        import android.support.v4.view.ViewPager;
+        import android.support.v4.view.ViewPager.OnPageChangeListener;
+        import android.util.AttributeSet;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.widget.FrameLayout;
+        import android.widget.ImageView;
+        import android.widget.ImageView.ScaleType;
 
 /**
- * 聊天Fragment的界面
- * 
- * http://blog.csdn.net/guolin_blog/article/details/26365683
- * 
- * @author guolin
+ * Created by wg on 2015/4/8.
  */
-public class ChatFragment extends Fragment {
+/**
+ * ViewPager实现的轮播图广告自定义视图，如京东首页的广告轮播图效果；
+ * 既支持自动轮播页面也支持手势滑动切换页面
+ * @author caizhiming
+ *
+ */
+
+public class SlideShowView {
 
     //轮播图图片数量
     private final static int IMAGE_COUNT = 3;
@@ -69,27 +61,17 @@ public class ChatFragment extends Fragment {
             super.handleMessage(msg);
             viewPager.setCurrentItem(currentItem);
         }
+
     };
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.first_fragment, container, false );
-	}
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-    }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
-        if(null == viewPager)
-        {
-            return;
-        }
-        viewPager.setFocusable(true);
+
+    public SlideShowView(Activity act , ViewPager viewPager1) {
+        // TODO Auto-generated constructor stub
         initData();
-        initUI();
+        initUI(act,viewPager1);
+        if(isAutoPlay){
+            startPlay();
+        }
+
     }
     /**
      * 开始轮播图切换
@@ -117,34 +99,35 @@ public class ChatFragment extends Fragment {
         dotViewsList = new ArrayList<View>();
 
     }
-
     /**
      * 初始化Views等UI
      */
-    private void initUI(){
+    private void initUI(Activity act, ViewPager viewpager1){
         //LayoutInflater.from(context).inflate(R.layout.first_fragment, this, true);
         for(int imageID : imagesResIds){
-            ImageView view =  new ImageView(getActivity());
+            ImageView view =  new ImageView(act);
             view.setImageResource(imageID);
-            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            view.setScaleType(ScaleType.CENTER_CROP);
             imageViewsList.add(view);
         }
-        dotViewsList.add(getActivity().findViewById(R.id.v_dot1));
-        dotViewsList.add(getActivity().findViewById(R.id.v_dot2));
-        dotViewsList.add(getActivity().findViewById(R.id.v_dot3));
+        dotViewsList.add(act.findViewById(R.id.v_dot1));
+        dotViewsList.add(act.findViewById(R.id.v_dot2));
+        dotViewsList.add(act.findViewById(R.id.v_dot3));
+
+        viewPager = viewpager1;
 
         viewPager.setAdapter(new MyPagerAdapter());
         viewPager.setOnPageChangeListener(new MyPageChangeListener());
-        if(isAutoPlay){
-            startPlay();
-        }
     }
-
+    public void addDotList(View view)
+    {
+        dotViewsList.add(view);
+    }
     /**
      * 填充ViewPager的页面适配器
      * @author caizhiming
      */
-    private class MyPagerAdapter  extends PagerAdapter {
+    private class MyPagerAdapter  extends PagerAdapter{
 
         @Override
         public void destroyItem(View container, int position, Object object) {
@@ -201,7 +184,7 @@ public class ChatFragment extends Fragment {
      * 当ViewPager中页面的状态发生改变时调用
      * @author caizhiming
      */
-    private class MyPageChangeListener implements ViewPager.OnPageChangeListener {
+    private class MyPageChangeListener implements OnPageChangeListener{
 
         boolean isAutoPlay = false;
 
@@ -281,4 +264,5 @@ public class ChatFragment extends Fragment {
             }
         }
     }
+
 }
