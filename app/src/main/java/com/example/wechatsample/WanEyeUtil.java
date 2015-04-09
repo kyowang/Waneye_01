@@ -11,7 +11,7 @@ import java.net.URLEncoder;
 /**
  * Created by wg on 2015/4/8.
  */
-public class WanEyeUtil {
+public  class WanEyeUtil {
     private static final String server_address = "112.126.81.167";
     private static final String server_port = "10086";
     private static final String register_uri = "/services/api/user.json";
@@ -101,7 +101,7 @@ public class WanEyeUtil {
         InputStream in = null;
         HttpUtil hu = new HttpUtil();
         in = hu.httpRequestPost(getRegisterUrl(),rp.toString(),RegisterPara.contentType);
-        
+
         return hu.getResponseCode();
     }
     public class RegisterPara
@@ -111,15 +111,21 @@ public class WanEyeUtil {
         private String email = "";
         private String phoneNumber = "";
         public static final String contentType = "application/json";
-        public void RegisterPara(String username,String password)
+        public RegisterPara(String username,String password)
         {
-            RegisterPara(username,password,"");
+            this.username = username;
+            this.password = password;
+            this.email = "";
+            this.phoneNumber = "";
         }
-        public void RegisterPara(String username,String password,String email)
+        public RegisterPara(String username,String password,String email)
         {
-            RegisterPara(username,password,email,"");
+            this.username = username;
+            this.password = password;
+            this.email = email;
+            this.phoneNumber = "";
         }
-        public void RegisterPara(String username,String password,String email,String phoneNumber)
+        public RegisterPara(String username,String password,String email,String phoneNumber)
         {
             this.username = username;
             this.password = password;

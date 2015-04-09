@@ -18,6 +18,15 @@
         android:layout_alignParentLeft="true"
         android:id="@+id/tableLayout">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_alarm"
+            android:layout_above="@+id/tableLayout"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ffff2b26"
+            android:visibility="invisible" />
+
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
@@ -36,7 +45,8 @@
                 android:ems="10"
                 android:id="@+id/et_username"
                 android:layout_column="1"
-                android:inputType="none" />
+                android:inputType="none"
+                android:layout_weight="1" />
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
@@ -56,7 +66,8 @@
                 android:inputType="textWebPassword"
                 android:ems="10"
                 android:id="@+id/et_password"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:layout_weight="1" />
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
@@ -76,7 +87,8 @@
                 android:ems="10"
                 android:id="@+id/et_confirm"
                 android:layout_column="1"
-                android:inputType="textWebPassword" />
+                android:inputType="textWebPassword"
+                android:layout_weight="1" />
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
@@ -96,7 +108,8 @@
                 android:inputType="textWebEmailAddress"
                 android:ems="10"
                 android:id="@+id/et_email"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:layout_weight="1" />
         </TableRow>
         <TableRow
             android:layout_width="fill_parent"
@@ -116,7 +129,8 @@
                 android:ems="10"
                 android:id="@+id/et_phone"
                 android:layout_column="1"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:layout_weight="1" />
         </TableRow>
     </TableLayout>
 
