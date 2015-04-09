@@ -1,6 +1,8 @@
 package com.example.wechatsample;
 
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -46,7 +48,7 @@ public class WanEyeUtil {
     }
     static public String getLoginUrl()
     {
-        return encUrlNoParameter("http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.register_uri);
+        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.register_uri;
     }
     static public String getPostLocationUrl()
     {
@@ -75,12 +77,13 @@ public class WanEyeUtil {
 
     static public boolean doLogin(String username, String passwd) throws IOException
     {
+        Log.d("WanEyeUtil","doLogin");
         InputStream in = null;
         StringBuffer sb = new StringBuffer("j_username=");
         sb.append(username);
         sb.append("&j_password=");
         sb.append(passwd);
-        sb.append("$login=");
+        sb.append("&login=");
         HttpUtil hu = new HttpUtil();
         in = hu.httpRequestPost(getLoginUrl(),sb.toString());
         cookieAuth = hu.getHeaderField("Set-Cookie");
