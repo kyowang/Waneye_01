@@ -73,7 +73,7 @@ public class HttpUtil {
         }
         return in;
     }
-    public InputStream httpRequestPost(String url_string, String data)
+    public InputStream httpRequestPost(String url_string, String data, String contentType)
     {
         int response = -1;
         try
@@ -87,7 +87,7 @@ public class HttpUtil {
             httpConn = (HttpURLConnection) urlConnection;
             httpConn.setAllowUserInteraction(false);
             httpConn.setDoOutput(true);
-            httpConn.setRequestProperty("Content-type","application/json");
+            httpConn.setRequestProperty("Content-type",contentType);
             httpConn.setInstanceFollowRedirects(true);
             httpConn.setRequestMethod("POST");
 

@@ -44,7 +44,7 @@ public class WanEyeUtil {
     }
     static public String getRegisterUrl()
     {
-        return encUrlNoParameter("http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.register_uri);
+        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.register_uri;
     }
     static public String getLoginUrl()
     {
@@ -85,7 +85,7 @@ public class WanEyeUtil {
         sb.append(passwd);
         sb.append("&login=");
         HttpUtil hu = new HttpUtil();
-        in = hu.httpRequestPost(getLoginUrl(),sb.toString());
+        in = hu.httpRequestPost(getLoginUrl(),sb.toString(),"application/x-www-form-urlencoded");
 
         if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
         {
@@ -94,4 +94,56 @@ public class WanEyeUtil {
         }
         return false;
     }
+
+    static public int doRegister(RegisterPara rp) throws IOException
+    {
+        Log.d("WanEyeUtil","doRegister");
+        InputStream in = null;
+        HttpUtil hu = new HttpUtil();
+        in = hu.httpRequestPost(getRegisterUrl(),rp.toString(),RegisterPara.contentType);
+        
+        return hu.getResponseCode();
+    }
+    public class RegisterPara
+    {
+        private String username = "";
+        private String password = "";
+        private String email = "";
+        private String phoneNumber = "";
+        public static final String contentType = "application/json";
+        public void RegisterPara(String username,String password)
+        {
+            RegisterPara(username,password,"");
+        }
+        public void RegisterPara(String username,String password,String email)
+        {
+            RegisterPara(username,password,email,"");
+        }
+        public void RegisterPara(String username,String password,String email,String phoneNumber)
+        {
+            this.username = username;
+            this.password = password;
+            this.email = email;
+            this.phoneNumber = phoneNumber;
+        }
+
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("username:");
+            sb.append(this.username.toString());
+            sb.append(",password:");
+            sb.append(this.password.toString());
+
+            sb.append(",email:");
+            sb.append(this.email.toString());
+
+            sb.append(",phoneNumber:");
+            sb.append(this.phoneNumber.toString());
+            sb.append("}");
+            return sb.toString();
+        }
+    }
 }
+
+
