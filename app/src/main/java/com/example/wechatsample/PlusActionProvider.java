@@ -30,23 +30,25 @@ public class PlusActionProvider extends ActionProvider {
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
-                        context.startActivity(new Intent(context,LoginActivity.class));
+
 						return true;
 					}
 				});
-		subMenu.add(context.getString(R.string.plus_add_friend))
+		subMenu.add(context.getString(R.string.plus_login))
 				.setIcon(R.drawable.ofm_add_icon)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
+                        context.startActivity(new Intent(context,LoginActivity.class));
 						return false;
 					}
 				});
-		subMenu.add(context.getString(R.string.plus_video_chat))
+		subMenu.add(context.getString(R.string.plus_register))
 				.setIcon(R.drawable.ofm_video_icon)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
+                        context.startActivity(new Intent(context,RegisterActivity.class));
 						return false;
 					}
 				});

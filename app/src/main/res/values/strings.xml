@@ -14,6 +14,8 @@
     <string name="action_feed">意见反馈</string>
     <string name="plus_group_chat">发布需求</string>
     <string name="plus_add_friend">添加朋友</string>
+    <string name="plus_login">用户登录</string>
+    <string name="plus_register">用户注册</string>
     <string name="plus_video_chat">视频聊天</string>
     <string name="plus_scan">扫一扫</string>
     <string name="plus_take_photo">拍照分享</string>
