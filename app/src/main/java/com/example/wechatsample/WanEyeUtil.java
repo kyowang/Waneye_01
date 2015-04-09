@@ -136,17 +136,17 @@ public  class WanEyeUtil {
         public String toString()
         {
             StringBuilder sb = new StringBuilder("{");
-            sb.append("username:");
+            sb.append("\"username\":\"");
             sb.append(this.username.toString());
-            sb.append(",password:");
+            sb.append("\",\"password\":\"");
             sb.append(this.password.toString());
 
-            sb.append(",email:");
+            sb.append("\",\"email\":\"");
             sb.append(this.email.toString());
 
-            sb.append(",phoneNumber:");
+            sb.append("\",\"phoneNumber\":\"");
             sb.append(this.phoneNumber.toString());
-            sb.append("}");
+            sb.append("\"}");
             return sb.toString();
         }
     }
