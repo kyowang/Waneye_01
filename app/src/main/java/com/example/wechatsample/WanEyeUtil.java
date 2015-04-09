@@ -48,7 +48,7 @@ public  class WanEyeUtil {
     }
     static public String getLoginUrl()
     {
-        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.register_uri;
+        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.login_uri;
     }
     static public String getPostLocationUrl()
     {
