@@ -40,6 +40,7 @@ public class LoginActivity extends Activity {
                 um = username.getText().toString();
                 pw = passwd.getText().toString();
                 tv.setText("Login Ongoing...");
+                tv.setVisibility(View.VISIBLE);
                 new LoginTask().execute("Nothing");
             }
         });
@@ -93,6 +94,7 @@ public class LoginActivity extends Activity {
             {
                 tv.setText("Login failed...");
             }
+            tv.setVisibility(View.VISIBLE);
         }
     }
 }

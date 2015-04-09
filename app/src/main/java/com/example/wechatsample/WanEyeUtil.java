@@ -86,9 +86,10 @@ public class WanEyeUtil {
         sb.append("&login=");
         HttpUtil hu = new HttpUtil();
         in = hu.httpRequestPost(getLoginUrl(),sb.toString());
-        cookieAuth = hu.getHeaderField("Set-Cookie");
+
         if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
         {
+            cookieAuth = hu.getHeaderField("Set-Cookie");
             return true;
         }
         return false;
