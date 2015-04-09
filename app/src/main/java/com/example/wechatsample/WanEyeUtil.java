@@ -1,6 +1,9 @@
 package com.example.wechatsample;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 
 /**
@@ -23,7 +26,7 @@ public class WanEyeUtil {
     private static final String postStareyePic_uri_midfix="/";
     private static final String postStareyePic_uri_postfix=".json";
 
-
+    private static String cookieAuth = "";
     // URL Utility part
     static public String encUrlNoParameter(String url)
     {
@@ -70,5 +73,21 @@ public class WanEyeUtil {
         return encUrlNoParameter("http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.postStareyePic_uri_prefix + instanceId + WanEyeUtil.postStareyePic_uri_midfix + picId + WanEyeUtil.postStareyePic_uri_postfix);
     }
 
-
+    static public boolean doLogin(String username, String passwd) throws IOException
+    {
+        InputStream in = null;
+        StringBuffer sb = new StringBuffer("j_username=");
+        sb.append(username);
+        sb.append("&j_password=");
+        sb.append(passwd);
+        sb.append("$login=");
+        HttpUtil hu = new HttpUtil();
+        in = hu.httpRequestPost(getLoginUrl(),sb.toString());
+        cookieAuth = hu.getHeaderField("Set-Cookie");
+        if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
+        {
+            return true;
+        }
+        return false;
+    }
 }

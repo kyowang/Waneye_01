@@ -32,6 +32,22 @@ public class LoginActivity extends Activity {
                 //view.setBackgroundColor(Color.GRAY);
                 String um = username.getText().toString();
                 String pw = passwd.getText().toString();
+
+                try
+                {
+                    if(WanEyeUtil.doLogin(um,pw))
+                    {
+                        Toast.makeText(getBaseContext(),"Login Successful",Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(getBaseContext(),"Login failed",Toast.LENGTH_LONG).show();
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }
