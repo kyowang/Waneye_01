@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 
 import com.example.wechatsample.HttpUtil.*;
 import com.example.wechatsample.WanEyeUtil.RegisterPara;
+
+import java.net.HttpURLConnection;
 
 
 public class RegisterActivity extends Activity {
@@ -54,17 +57,9 @@ public class RegisterActivity extends Activity {
                 if(paraValidation(usernameString,passwordString,confirmString,emailString,phoneString))
                 {
                     rp = weu.new RegisterPara(usernameString,passwordString,emailString,phoneString);
-                    try
-                    {
-                        WanEyeUtil.doRegister(rp);
-                    }
-                    catch(Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                    finally {
-
-                    }
+                    alarm.setText("Registering...");
+                    alarm.setVisibility(View.VISIBLE);
+                    new RegisterTask().execute("");
                 }
                 else
                 {
@@ -117,5 +112,36 @@ public class RegisterActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class RegisterTask extends AsyncTask<String , Void, Integer> {
+        protected Integer doInBackground(String... urls)
+        {
+            Integer result = -1;
+            try
+            {
+                result = WanEyeUtil.doRegister(rp);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            finally {
+
+            }
+            return result;
+        }
+        protected void onPostExecute(Integer result)
+        {
+            if(result == HttpURLConnection.HTTP_OK)
+            {
+                alarm.setText("Register success...");
+            }
+            else
+            {
+                alarm.setText("Register failed...");
+            }
+            alarm.setVisibility(View.VISIBLE);
+        }
     }
 }
