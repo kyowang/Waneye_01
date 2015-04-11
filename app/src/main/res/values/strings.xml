@@ -22,6 +22,6 @@
     <string name="title_activity_login">登录</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_register">注册</string>
-    <string name="title_activity_post_star_eye_reuquest">PostStarEyeReuquestActivity</string>
+    <string name="title_activity_post_star_eye_reuquest">新建请求</string>
 
 </resources>

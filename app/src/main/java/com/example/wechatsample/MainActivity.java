@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.baidu.mapapi.SDKInitializer;
 
 /**
  * 高仿微信的主界面
@@ -58,6 +59,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        //在使用SDK各组件之前初始化context信息，传入ApplicationContext
+        //注意该方法要再setContentView方法之前实现
+        SDKInitializer.initialize(getApplicationContext());
+
 		setContentView(R.layout.activity_main);
 		setOverflowShowingAlways();
 		dm = getResources().getDisplayMetrics();
