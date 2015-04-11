@@ -136,6 +136,11 @@ public class RegisterActivity extends Activity {
             if(result == HttpURLConnection.HTTP_OK)
             {
                 alarm.setText("Register success...");
+                AppCommonData comData = new AppCommonData(RegisterActivity.this);
+                comData.setStringValue("username",rp.getUsername());
+                //comData.setStringValue("email",rp.getEmail());
+                //comData.setStringValue("phoneNumber",rp.getPhoneNumber());
+                comData.commit();
             }
             else
             {

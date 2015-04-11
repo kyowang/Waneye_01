@@ -28,6 +28,10 @@ public  class WanEyeUtil {
     private static final String postStareyePic_uri_midfix="/";
     private static final String postStareyePic_uri_postfix=".json";
 
+    public static String getCookieAuth() {
+        return cookieAuth;
+    }
+
     private static String cookieAuth = "";
     // URL Utility part
     static public String encUrlNoParameter(String url)
@@ -89,12 +93,26 @@ public  class WanEyeUtil {
 
         if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
         {
-            cookieAuth = hu.getHeaderField("Set-Cookie");
+            cookieAuth = WanEyeUtil.getJsessionPair(hu.getHeaderField("Set-Cookie"));
             return true;
         }
         return false;
     }
-
+    static public String getJsessionPair(String value)
+    {
+        if(null == value)
+        {
+            return "";
+        }
+        String temp[];
+        String result = "";
+        temp = value.split(";");
+        if(temp.length <= 0 || temp == null)
+        {
+            return "";
+        }
+        return temp[0];
+    }
     static public int doRegister(RegisterPara rp) throws IOException
     {
         Log.d("WanEyeUtil","doRegister");
@@ -106,9 +124,23 @@ public  class WanEyeUtil {
     }
     public class RegisterPara
     {
+        public String getUsername() {
+            return username;
+        }
+
         private String username = "";
         private String password = "";
+
+        public String getEmail() {
+            return email;
+        }
+
         private String email = "";
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
         private String phoneNumber = "";
         public static final String contentType = "application/json";
         public RegisterPara(String username,String password)

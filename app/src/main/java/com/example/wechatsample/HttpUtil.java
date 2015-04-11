@@ -1,7 +1,6 @@
 package com.example.wechatsample;
 
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,13 +8,20 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URL.*;
-import com.example.wechatsample.WanEyeUtil;
 
 /**
  * Created by kyo on 2015/4/8.
  */
 public class HttpUtil {
+    public void setmCookie(String mCookie) {
+        this.mCookie = mCookie;
+    }
+
+    public String getmCookie() {
+        return mCookie;
+    }
+
+    private String mCookie = "";
     private InputStream in = null;
     private URLConnection urlConnection = null;
     private HttpURLConnection httpConn = null;
@@ -23,6 +29,10 @@ public class HttpUtil {
     public void HttpUtil()
     {
 
+    }
+    public void HttpUtil(String cookie)
+    {
+        this.mCookie = cookie;
     }
     public void closeConnection()
     {
@@ -56,6 +66,10 @@ public class HttpUtil {
             httpConn = (HttpURLConnection) urlConnection;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
+            if(mCookie != "")
+            {
+                httpConn.setRequestProperty("Cookie",mCookie);
+            }
             httpConn.setRequestMethod("GET");
             httpConn.connect();
             response = httpConn.getResponseCode();
@@ -87,6 +101,10 @@ public class HttpUtil {
             httpConn = (HttpURLConnection) urlConnection;
             httpConn.setAllowUserInteraction(false);
             httpConn.setDoOutput(true);
+            if(mCookie != "")
+            {
+                httpConn.setRequestProperty("Cookie",mCookie);
+            }
             httpConn.setRequestProperty("Content-type",contentType);
             httpConn.setInstanceFollowRedirects(true);
             httpConn.setRequestMethod("POST");

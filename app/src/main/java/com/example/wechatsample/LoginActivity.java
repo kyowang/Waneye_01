@@ -44,6 +44,9 @@ public class LoginActivity extends Activity {
                 new LoginTask().execute("Nothing");
             }
         });
+        AppCommonData comData = new AppCommonData(this);
+        username.setText(comData.getString("username",""));
+        passwd.setText(comData.getString("password",""));
     }
 
 
@@ -89,6 +92,12 @@ public class LoginActivity extends Activity {
             if(result)
             {
                 tv.setText("Login success...");
+                AppCommonData comData = new AppCommonData(LoginActivity.this);
+                comData.setStringValue("username",um);
+                comData.setStringValue("password",pw);
+                comData.setStringValue("authCookie",WanEyeUtil.getCookieAuth());
+                //comData.setStringValue("phoneNumber",rp.getPhoneNumber());
+                comData.commit();
             }
             else
             {
