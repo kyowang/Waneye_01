@@ -1,6 +1,8 @@
 package com.example.wechatsample;
 
 
+import android.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +28,11 @@ public class HttpUtil {
     private URLConnection urlConnection = null;
     private HttpURLConnection httpConn = null;
 
-    public void HttpUtil()
+    public HttpUtil()
     {
 
     }
-    public void HttpUtil(String cookie)
+    public HttpUtil(String cookie)
     {
         this.mCookie = cookie;
     }
@@ -89,9 +91,10 @@ public class HttpUtil {
     }
     public InputStream httpRequestPost(String url_string, String data, String contentType)
     {
-        int response = -1;
+        Integer response = -1;
         try
         {
+            Log.d("MainActivity", "httpRequestPost");
             URL url = new URL(url_string);
             urlConnection = url.openConnection();
             if(! (urlConnection instanceof HttpURLConnection))
@@ -103,6 +106,7 @@ public class HttpUtil {
             httpConn.setDoOutput(true);
             if(mCookie != "")
             {
+                Log.d("MainActivity", "Cookie added to the header!");
                 httpConn.setRequestProperty("Cookie",mCookie);
             }
             httpConn.setRequestProperty("Content-type",contentType);
@@ -115,11 +119,11 @@ public class HttpUtil {
             os.flush();
             os.close();
 
-            response = httpConn.getResponseCode();
-            if(response == HttpURLConnection.HTTP_OK)
-            {
-                in = httpConn.getInputStream();
-            }
+            //response = httpConn.getResponseCode();
+            //if(response == HttpURLConnection.HTTP_OK)
+            //{
+            in = httpConn.getInputStream();
+            //}
         }
         catch(Exception e)
         {
