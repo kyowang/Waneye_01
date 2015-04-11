@@ -50,7 +50,7 @@ public class PostStarEyeReuquestActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             String s = intent.getAction();
             Log.d(LTAG, "action: " + s);
-            mTV = (TextView) findViewById(R.id.tv_alarm);
+            mTV = (TextView) findViewById(R.id.tv_alerm_show);
             //mTV.setTextColor(Color.RED);
             if (s.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
                 mTV.setText("key 验证出错! 请在 AndroidManifest.xml 文件中检查 key 设置");
@@ -105,6 +105,7 @@ public class PostStarEyeReuquestActivity extends Activity {
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
 
+        mTV = (TextView) findViewById(R.id.tv_alerm_show);
         etSearch = (EditText)findViewById(R.id.et_search_key);
         btSearch = (Button)findViewById(R.id.bt_search);
         btSearch.setOnClickListener(new View.OnClickListener() {
