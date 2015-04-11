@@ -262,6 +262,7 @@ public class MainActivity extends FragmentActivity {
             comData.setStringValue("my_latitude",String.valueOf(location.getLatitude()));
             comData.setStringValue("my_longitude",String.valueOf(location.getLongitude()));
             comData.setStringValue("my_loc_time",location.getTime());
+            comData.setStringValue("my_loc_add",location.getAddrStr());
             comData.commit();
 
             mLp = new LocationPara(location.getLatitude(),location.getLongitude());
