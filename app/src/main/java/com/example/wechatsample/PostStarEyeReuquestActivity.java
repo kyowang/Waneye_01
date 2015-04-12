@@ -15,10 +15,12 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,11 +57,16 @@ import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 
 public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSearchResultListener {
@@ -67,7 +74,10 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
 
     AutoCompleteTextView etSearch = null;
     Button btSearch = null;
+    Spinner sp_address = null;
+    private ArrayAdapter<String> locAddapter = null;
     private ArrayAdapter<String> sugAdapter = null;
+    private boolean mIsCity = false;
 
     //For Baidu Location SDK
     public LocationClient mLocationClient = null;
@@ -78,6 +88,9 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
     private Marker myMarker = null;
     InfoWindow mInfoWindow = null;
 
+
+    //for store the search result string
+    private String mSearchResutlJson = "";
 
     //For Baidu MAP SDK
     MapView mMapView = null;
@@ -156,11 +169,14 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         mSuggestionSearch.setOnGetSuggestionResultListener(new MyOnGetSuggestionResultListener());
 
         //mMyMarkerOption = new MarkerOptions();
+        sp_address = (Spinner)findViewById(R.id.spinner_location);
+
         mTV = (TextView) findViewById(R.id.tv_alerm_show);
         etSearch = (AutoCompleteTextView)findViewById(R.id.et_search_key);
         /**
          * 当输入关键字变化时，动态更新建议列表
          */
+
         etSearch.addTextChangedListener(new MyTextWatcher());
 
         sugAdapter = new ArrayAdapter<String>(this,
@@ -451,13 +467,29 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         }
         protected void onPostExecute(String result)
         {
+
             //TODO parse json from result.
             if("" == result)
             {
                 Toast.makeText(getBaseContext(),"搜索失败",Toast.LENGTH_LONG).show();
                 Log.d(LTAG,"搜索失败");
+                return;
             }
-            Toast.makeText(getBaseContext(),result,Toast.LENGTH_LONG).show();
+            mSearchResutlJson = result;
+            //Toast.makeText(getBaseContext(),result,Toast.LENGTH_LONG).show();
+            Log.d(LTAG,result);
+            try
+            {
+                locAddapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,parseSearchJson(result));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return;
+            }
+            sp_address.setAdapter(locAddapter);
+
+            return;
         }
     }
     public String readJsonData(InputStream in) throws IOException
@@ -474,5 +506,68 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             sb.append(line);
         }
         return sb.toString();
+    }
+    public ArrayList<String> parseSearchJson(String result) throws JSONException
+    {
+        ArrayList<String> as = new ArrayList<String>();
+        JSONObject jo = new JSONObject().getJSONObject(result);
+        int status = jo.getInt("status");
+        boolean citys = false;
+        if(0 != status)
+        {
+            return null;
+        }
+        JSONObject jo_temp = new JSONObject();
+        JSONArray ja = jo.getJSONArray("results");
+        for (int i = 0; i < ja.length(); i++)
+        {
+            jo_temp = ja.getJSONObject(i);
+            if(jo_temp.length() > 2)
+            {
+                as.add(jo_temp.getString("address"));
+            }
+            else
+            {
+                if(!citys)
+                {
+                    citys = true;
+                    mIsCity = true;
+                }
+                as.add(jo_temp.getString("name"));
+            }
+        }
+        return as;
+    }
+    public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener
+    {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+        {
+            int index = parent.getSelectedItemPosition();
+
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent)
+        {
+            //nothing to do
+        }
+    }
+
+    public LatLng getLatLngFromJson(String json, int pos) throws JSONException
+    {
+        double lat, lng;
+        JSONObject jo = new JSONObject().getJSONObject(json);
+        int status = jo.getInt("status");
+        boolean citys = false;
+        if(0 != status)
+        {
+            return null;
+        }
+        JSONObject jo_temp = new JSONObject();
+        JSONObject jo_temp2 = new JSONObject();
+        JSONArray ja = jo.getJSONArray("results");
+        jo_temp = ja.getJSONObject(pos);
+        jo_temp2 = jo_temp.getJSONObject("location");
+        return new LatLng(jo_temp2.getDouble("lat"),jo_temp2.getDouble("lng"));
     }
 }
