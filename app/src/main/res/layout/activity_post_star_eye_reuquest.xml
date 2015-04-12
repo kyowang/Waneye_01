@@ -62,7 +62,8 @@
                 android:layout_weight="2"
                 android:spinnerMode="dialog"
                 android:background="#ff444444"
-                android:dropDownSelector="#ff444444" />
+                android:dropDownSelector="#ff444444"
+                android:minHeight="50dp" />
 
         </LinearLayout>
         <com.baidu.mapapi.map.MapView
