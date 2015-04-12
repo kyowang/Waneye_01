@@ -3,8 +3,10 @@ package com.example.wechatsample;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 
@@ -28,6 +30,11 @@ public  class WanEyeUtil {
     private static final String postStareyePic_uri_midfix="/";
     private static final String postStareyePic_uri_postfix=".json";
 
+    private static final String getBaiduPoiInterface_uri_prefix = "http://api.map.baidu.com/place/v2/";
+    private static final String getBaiduPoiInterface_uri_midfix = "search?q=";
+    private static final String getBaiduPoiInterface_uri_midfix2 = "&region=";
+    private static final String getBaiduPoiInterface_uri_postfix = "&output=json&ak=ZHES86tX8Ij6ZT2aMXKz5wV7";
+
     public static String getCookieAuth() {
         return cookieAuth;
     }
@@ -49,6 +56,10 @@ public  class WanEyeUtil {
             e.printStackTrace();
         }
         return result;
+    }
+    static public String getBaiduPoiInterface_Url(String key, String city)
+    {
+        return WanEyeUtil.getBaiduPoiInterface_uri_prefix + WanEyeUtil.getBaiduPoiInterface_uri_midfix + encUrlNoParameter(key) + WanEyeUtil.getBaiduPoiInterface_uri_midfix2 + encUrlNoParameter(city) + WanEyeUtil.getBaiduPoiInterface_uri_postfix;
     }
     static public String getRegisterUrl()
     {
@@ -82,7 +93,28 @@ public  class WanEyeUtil {
     {
         return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.postStareyePic_uri_prefix + instanceId + WanEyeUtil.postStareyePic_uri_midfix + picId + WanEyeUtil.postStareyePic_uri_postfix;
     }
-
+    static public String doGetBaiduPoiInfo(String key) throws  IOException
+    {
+        Log.d("MainActivity","doGetBaiduPoiInfo");
+        String result = "";
+        HttpUtil hu = new HttpUtil();
+        result = hu.httpRequestGet(WanEyeUtil.getBaiduPoiInterface_Url(key, "世界"), false);
+        if(hu.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            return null;
+        }
+        return result;
+    }
+    static public String doGetBaiduPoiInfo(String key, String city)throws  IOException
+    {
+        Log.d("MainActivity","doGetBaiduPoiInfo");
+        String result = "";
+        HttpUtil hu = new HttpUtil();
+        result = hu.httpRequestGet(WanEyeUtil.getBaiduPoiInterface_Url(key, city), false);
+        if(hu.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            return "";
+        }
+        return result;
+    }
     static public boolean doLogin(String username, String passwd) throws IOException
     {
         Log.d("MainActivity","doLogin");
@@ -93,7 +125,7 @@ public  class WanEyeUtil {
         sb.append(passwd);
         sb.append("&login=");
         HttpUtil hu = new HttpUtil();
-        in = hu.httpRequestPost(getLoginUrl(),sb.toString(),"application/x-www-form-urlencoded");
+        in = hu.httpRequestPost(getLoginUrl(),sb.toString(),"application/x-www-form-urlencoded", true);
 
         if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
         {
@@ -122,7 +154,7 @@ public  class WanEyeUtil {
         Log.d("MainActivity","doRegister");
         InputStream in = null;
         HttpUtil hu = new HttpUtil();
-        in = hu.httpRequestPost(getRegisterUrl(),rp.toString(),RegisterPara.contentType);
+        in = hu.httpRequestPost(getRegisterUrl(),rp.toString(),RegisterPara.contentType, true);
 
         return hu.getResponseCode();
     }
@@ -130,7 +162,7 @@ public  class WanEyeUtil {
     {
         Log.d("MainActivity","doPostLocation");
         HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
-        hu.httpRequestPost(getPostLocationUrl(),lp.toString(),LocationPara.contentType);
+        hu.httpRequestPost(getPostLocationUrl(),lp.toString(),LocationPara.contentType,true);
 
         return hu.getResponseCode();
     }
@@ -194,6 +226,21 @@ public  class WanEyeUtil {
             sb.append("\"}");
             return sb.toString();
         }
+    }
+    static public String readJsonData(InputStream in) throws IOException
+    {
+        if(null == in)
+        {
+            return "";
+        }
+        String line = "";
+        StringBuilder sb = new StringBuilder();
+        BufferedReader rd = new BufferedReader(new InputStreamReader(in));
+        while ((line = rd.readLine()) != null)
+        {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 }
 

@@ -1,39 +1,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    tools:context="com.example.wechatsample.PostStarEyeReuquestActivity">
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/tv_alerm_show"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:visibility="invisible"
-        android:background="#ffff8520"
-        android:textColor="#fffff3fb" />
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmapView"
-        android:layout_width="fill_parent"
-        android:layout_height="250dp"
-        android:clickable="true"
-        android:layout_below="@+id/tv_alerm_show" />
-    <EditText
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_search_key"
-        android:layout_below="@+id/bmapView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
+    android:background="@color/commom_background_color"
+    >
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        tools:context="com.example.wechatsample.PostStarEyeReuquestActivity">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/tv_alerm_show"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:visibility="invisible"
+            android:background="#ffff8520"
+            android:textColor="#fffff3fb"
+            android:minHeight="16dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:id="@+id/linearLayout1"
+            android:layout_below="@+id/tv_alerm_show"
+            android:layout_height="wrap_content">
+            <AutoCompleteTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_search_key"
+                android:layout_weight="1"
+                android:layout_gravity="bottom"
+                android:completionThreshold="2" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="搜索"
-        android:id="@+id/bt_search"
-        android:layout_alignParentRight="true"
-        android:layout_alignBaseline="@+id/et_search_key" />
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="搜索"
+                android:id="@+id/bt_search" />
+        </LinearLayout>
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="fill_parent"
+            android:layout_height="250dp"
+            android:clickable="true"
+            android:layout_below="@+id/linearLayout1" />
 
+    </RelativeLayout>
 </RelativeLayout>

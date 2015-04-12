@@ -54,9 +54,11 @@ public class HttpUtil {
         return httpConn.getHeaderField(key);
     }
 
-    public InputStream httpRequestGet(String url_string)
+    public String httpRequestGet(String url_string ,boolean cookie)
     {
         int response = -1;
+        String result ="";
+        in = null;
         try
         {
             URL url = new URL(url_string);
@@ -68,17 +70,18 @@ public class HttpUtil {
             httpConn = (HttpURLConnection) urlConnection;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
-            if(mCookie != "")
+            if(mCookie != "" && cookie)
             {
                 httpConn.setRequestProperty("Cookie",mCookie);
             }
             httpConn.setRequestMethod("GET");
             httpConn.connect();
-            response = httpConn.getResponseCode();
-            if(response == HttpURLConnection.HTTP_OK)
-            {
-                in = httpConn.getInputStream();
-            }
+            //response = httpConn.getResponseCode();
+            //if(response == HttpURLConnection.HTTP_OK)
+            //{
+            in = httpConn.getInputStream();
+            result = WanEyeUtil.readJsonData(in);
+            //}
         }
         catch(Exception e)
         {
@@ -87,9 +90,9 @@ public class HttpUtil {
         finally {
             httpConn.disconnect();
         }
-        return in;
+        return result;
     }
-    public InputStream httpRequestPost(String url_string, String data, String contentType)
+    public InputStream httpRequestPost(String url_string, String data, String contentType, boolean cookie)
     {
         Integer response = -1;
         try
@@ -104,7 +107,7 @@ public class HttpUtil {
             httpConn = (HttpURLConnection) urlConnection;
             httpConn.setAllowUserInteraction(false);
             httpConn.setDoOutput(true);
-            if(mCookie != "")
+            if(mCookie != "" && cookie)
             {
                 Log.d("MainActivity", "Cookie added to the header!");
                 httpConn.setRequestProperty("Cookie",mCookie);
@@ -119,11 +122,11 @@ public class HttpUtil {
             os.flush();
             os.close();
 
-            //response = httpConn.getResponseCode();
-            //if(response == HttpURLConnection.HTTP_OK)
-            //{
-            in = httpConn.getInputStream();
-            //}
+            response = httpConn.getResponseCode();
+            if(response == HttpURLConnection.HTTP_OK)
+            {
+                in = httpConn.getInputStream();
+            }
         }
         catch(Exception e)
         {
