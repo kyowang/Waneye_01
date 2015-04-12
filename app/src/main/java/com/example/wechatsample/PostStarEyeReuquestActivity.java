@@ -78,6 +78,9 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
     private ArrayAdapter<String> locAddapter = null;
     private ArrayAdapter<String> sugAdapter = null;
     private boolean mIsCity = false;
+    Button btPostRequest = null;
+    EditText etDescription = null;
+
 
     //For Baidu Location SDK
     public LocationClient mLocationClient = null;
@@ -169,6 +172,28 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         mSuggestionSearch.setOnGetSuggestionResultListener(new MyOnGetSuggestionResultListener());
 
         //mMyMarkerOption = new MarkerOptions();
+        btPostRequest = (Button)findViewById(R.id.bt_post_request);
+        btPostRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(null == mLatLngTarget)
+                {
+                    mTV.setText("请选择目的地！");
+                    mTV.setVisibility(View.VISIBLE);
+                    return;
+                }
+                else if(etDescription.getText().toString().equals(""))
+                {
+                    mTV.setText("请简单描述你的需求哦！");
+                    mTV.setVisibility(View.VISIBLE);
+                    return;
+                }
+                mTV.setVisibility(View.GONE);
+                StarEyeInstance sei = new StarEyeInstance(mLatLngTarget.latitude,mLatLngTarget.longitude,etDescription.getText().toString());
+            }
+        });
+        etDescription = (EditText)findViewById(R.id.et_description);
+
         sp_address = (Spinner)findViewById(R.id.spinner_location);
 
         mTV = (TextView) findViewById(R.id.tv_alerm_show);
@@ -427,6 +452,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         {
             myMarker.setPosition(point);
         }
+        MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(point);
+        mBaiduMap.animateMapStatus(u);
         showInforWindow(point);
     }
     public void showInforWindow(LatLng point)
@@ -488,42 +515,29 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
                 return;
             }
             sp_address.setAdapter(locAddapter);
-
+            sp_address.setOnItemSelectedListener(new MyOnItemSelectedListener());
             return;
         }
     }
-    public String readJsonData(InputStream in) throws IOException
-    {
-        if(null == in)
-        {
-            return "";
-        }
-        String line = "";
-        StringBuilder sb = new StringBuilder();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(in));
-        while ((line = rd.readLine()) != null)
-        {
-            sb.append(line);
-        }
-        return sb.toString();
-    }
+
     public ArrayList<String> parseSearchJson(String result) throws JSONException
     {
         ArrayList<String> as = new ArrayList<String>();
-        JSONObject jo = new JSONObject().getJSONObject(result);
+        JSONObject jo = new JSONObject(result);
         int status = jo.getInt("status");
         boolean citys = false;
         if(0 != status)
         {
             return null;
         }
-        JSONObject jo_temp = new JSONObject();
+        JSONObject jo_temp;
         JSONArray ja = jo.getJSONArray("results");
         for (int i = 0; i < ja.length(); i++)
         {
             jo_temp = ja.getJSONObject(i);
             if(jo_temp.length() > 2)
             {
+                mIsCity = false;
                 as.add(jo_temp.getString("address"));
             }
             else
@@ -533,18 +547,53 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
                     citys = true;
                     mIsCity = true;
                 }
-                as.add(jo_temp.getString("name"));
+                as.add(jo_temp.getString("name") + " results:" + jo_temp.getString("num"));
             }
         }
         return as;
     }
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener
     {
+        private boolean mCityFirstTime = false;
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
         {
+            Log.d(LTAG,"onItemSelected");
             int index = parent.getSelectedItemPosition();
-
+            if(mIsCity)
+            {
+                if(!mCityFirstTime)
+                {
+                    //first time for City, Do nothing.
+                    mCityFirstTime = true;
+                    return;
+                }
+                try
+                {
+                    String city = getCityFromJson(mSearchResutlJson, index);
+                    new DoBaiduPoiQueryTask().execute(city);
+                    mCityFirstTime = false;
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            else
+            {
+                try
+                {
+                    LatLng ll = getLatLngFromJson(mSearchResutlJson,index);
+                    Log.d(LTAG,ll.toString());
+                    setTargetMarker(ll);
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                    return;
+                }
+            }
         }
         @Override
         public void onNothingSelected(AdapterView<?> parent)
@@ -556,18 +605,33 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
     public LatLng getLatLngFromJson(String json, int pos) throws JSONException
     {
         double lat, lng;
-        JSONObject jo = new JSONObject().getJSONObject(json);
+        JSONObject jo = new JSONObject(json);
         int status = jo.getInt("status");
         boolean citys = false;
         if(0 != status)
         {
             return null;
         }
-        JSONObject jo_temp = new JSONObject();
-        JSONObject jo_temp2 = new JSONObject();
+        JSONObject jo_temp;
+        JSONObject jo_temp2;
         JSONArray ja = jo.getJSONArray("results");
         jo_temp = ja.getJSONObject(pos);
         jo_temp2 = jo_temp.getJSONObject("location");
         return new LatLng(jo_temp2.getDouble("lat"),jo_temp2.getDouble("lng"));
+    }
+    public String getCityFromJson(String json, int pos) throws JSONException
+    {
+        String city;
+        JSONObject jo = new JSONObject(json);
+        int status = jo.getInt("status");
+        if(0 != status)
+        {
+            return "";
+        }
+        JSONObject jo_temp;
+        JSONArray ja = jo.getJSONArray("results");
+        jo_temp = ja.getJSONObject(pos);
+        city = jo_temp.getString("name");
+        return city;
     }
 }

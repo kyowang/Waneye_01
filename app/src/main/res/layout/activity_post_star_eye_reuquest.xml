@@ -17,7 +17,7 @@
             android:id="@+id/tv_alerm_show"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:background="#ffff8520"
             android:textColor="#fffff3fb"
             android:minHeight="16dp" />
@@ -59,7 +59,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/spinner_location"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:spinnerMode="dialog"
+                android:background="#ff444444"
+                android:dropDownSelector="#ff444444" />
 
         </LinearLayout>
         <com.baidu.mapapi.map.MapView
@@ -68,6 +71,24 @@
             android:layout_height="250dp"
             android:clickable="true"
             android:layout_below="@+id/linearLayout2" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/et_description"
+            android:layout_below="@+id/bmapView"
+            android:layout_alignParentLeft="true"
+            android:hint="输入一些描述吧:)" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="提交"
+            android:id="@+id/bt_post_request"
+            android:layout_below="@+id/et_description"
+            android:layout_alignParentLeft="true" />
 
     </RelativeLayout>
 </RelativeLayout>
