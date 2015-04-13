@@ -76,12 +76,12 @@ public class HttpUtil {
             }
             httpConn.setRequestMethod("GET");
             httpConn.connect();
-            //response = httpConn.getResponseCode();
-            //if(response == HttpURLConnection.HTTP_OK)
-            //{
-            in = httpConn.getInputStream();
-            result = WanEyeUtil.readJsonData(in);
-            //}
+            response = httpConn.getResponseCode();
+            if(response == HttpURLConnection.HTTP_OK)
+            {
+                in = httpConn.getInputStream();
+                result = WanEyeUtil.readJsonData(in);
+            }
         }
         catch(Exception e)
         {

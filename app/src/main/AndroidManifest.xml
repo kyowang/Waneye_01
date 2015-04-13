@@ -76,13 +76,13 @@
             android:label="@string/title_activity_register" >
         </activity>
 
-        <!--<meta-data
-            android:name="com.baidu.lbsapi.API_KEY"
-            android:value="YPY855zFichDsDZW7Qqc2r09" /> -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
+            android:value="YPY855zFichDsDZW7Qqc2r09" />
+        <!--<meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
             android:value="0lZNE2OGYijSjYsuPioKyBeG"
-            ></meta-data>
+            ></meta-data>-->
 
         <activity
             android:name=".PostStarEyeReuquestActivity"

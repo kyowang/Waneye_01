@@ -17,7 +17,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <LinearLayout
+            <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -45,7 +45,12 @@
                         android:layout_marginLeft="5dp"
                         android:background="@drawable/dot_white" />
 
-                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listHot" />
 </LinearLayout>
