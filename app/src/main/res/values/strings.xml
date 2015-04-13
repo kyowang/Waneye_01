@@ -23,5 +23,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_register">注册</string>
     <string name="title_activity_post_star_eye_reuquest">新建请求</string>
+    <string name="title_activity_star_eye_detail">StarEyeDetailActivity</string>
 
 </resources>
