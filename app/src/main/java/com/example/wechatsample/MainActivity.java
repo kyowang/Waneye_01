@@ -297,6 +297,11 @@ public class MainActivity extends FragmentActivity {
                 Log.d(LTAG,"Location Post success!!");
                 Toast.makeText(getBaseContext(),"Location Post success!",Toast.LENGTH_LONG).show();
             }
+            else if(result == HttpURLConnection.HTTP_UNAUTHORIZED)
+            {
+                Log.d(LTAG,"Location Post HTTP_UNAUTHORIZED!!");
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+            }
             else
             {
                 Log.d(LTAG,"Location Post failed!!");

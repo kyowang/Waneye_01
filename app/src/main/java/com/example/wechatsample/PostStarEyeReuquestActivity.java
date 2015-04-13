@@ -657,7 +657,7 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             {
                 mTV.setText("请求发送成功！");
             }
-            else if(result == HttpURLConnection.HTTP_FORBIDDEN)
+            else if(result == HttpURLConnection.HTTP_UNAUTHORIZED)
             {
                 //重新登录
                 mTV.setText("用户验证失败，请重新登录！");
