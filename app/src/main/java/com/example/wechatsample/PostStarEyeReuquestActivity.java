@@ -65,6 +65,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -190,6 +191,7 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
                 }
                 mTV.setVisibility(View.GONE);
                 StarEyeInstance sei = new StarEyeInstance(mLatLngTarget.latitude,mLatLngTarget.longitude,etDescription.getText().toString());
+                new doPostStarEyeInstanceTask().execute(sei);
             }
         });
         etDescription = (EditText)findViewById(R.id.et_description);
@@ -633,5 +635,39 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         jo_temp = ja.getJSONObject(pos);
         city = jo_temp.getString("name");
         return city;
+    }
+
+    private class doPostStarEyeInstanceTask extends AsyncTask<StarEyeInstance , Void, Integer>{
+        protected Integer doInBackground(StarEyeInstance... seis)
+        {
+            Integer result = -1;
+            try
+            {
+                result = WanEyeUtil.doPostStarEyeInstance(seis[0]);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+        protected void onPostExecute(Integer result)
+        {
+            if(result == HttpURLConnection.HTTP_OK)
+            {
+                mTV.setText("请求发送成功！");
+            }
+            else if(result == HttpURLConnection.HTTP_FORBIDDEN)
+            {
+                //重新登录
+                mTV.setText("用户验证失败，请重新登录！");
+
+            }
+            else
+            {
+                mTV.setText("请求失败，请重试！");
+            }
+            mTV.setVisibility(View.VISIBLE);
+        }
     }
 }

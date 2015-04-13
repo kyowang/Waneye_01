@@ -25,9 +25,9 @@ public class StarEyeInstance {
         sb.append(this.longitude.toString());
         sb.append(",\"status\":");
         sb.append(this.status.toString());
-        sb.append(",\"description\":");
+        sb.append(",\"description\":\"");
         sb.append(this.description);
-        sb.append("}");
+        sb.append("\"}");
         return sb.toString();
     }
 }

@@ -115,6 +115,15 @@ public  class WanEyeUtil {
         }
         return result;
     }
+
+    static public Integer doPostStarEyeInstance(StarEyeInstance sei) throws IOException
+    {
+        Log.d("MainActivity","doPostStarEyeInstance");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        hu.httpRequestPost(getPostStarEyeInstanceUrl(),sei.toString(),StarEyeInstance.contentType,true);
+
+        return hu.getResponseCode();
+    }
     static public boolean doLogin(String username, String passwd) throws IOException
     {
         Log.d("MainActivity","doLogin");
