@@ -1,17 +1,30 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class StarEyeDetailActivity extends Activity {
+    private Intent mIntentMe;
+    private Bundle mBundleData;
+    private TextView mTVDescription;
+    private String mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_eye_detail);
+        mTVDescription = (TextView) findViewById(R.id.tv_description);
+        mIntentMe = getIntent();
+        mBundleData = mIntentMe.getExtras();
+        if(! mBundleData.isEmpty())
+        {
+        
+        }
     }
 
 
