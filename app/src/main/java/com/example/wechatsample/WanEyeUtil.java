@@ -124,6 +124,15 @@ public  class WanEyeUtil {
 
         return hu.getResponseCode();
     }
+    static public String doGetStarEyeByMe() throws IOException
+    {
+        String body;
+        Log.d("MainActivity","doGetStarEyeByMe");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        body = hu.httpRequestGet(getInstanceUrl(),true);
+
+        return body;
+    }
     static public boolean doLogin(String username, String passwd) throws IOException
     {
         Log.d("MainActivity","doLogin");

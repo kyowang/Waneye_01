@@ -2,7 +2,9 @@ package com.example.wechatsample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,13 +20,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
+import com.baidu.mapapi.model.LatLng;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +69,8 @@ public class ChatFragment extends Fragment {
     //放圆点的View的list
     private List<View> dotViewsList;
 
+    private ListView mLVStarEyeInstance;
+    private String mJson = "";
     private ViewPager viewPager;
     //当前轮播页
     private int currentItem  = 0;
@@ -82,11 +98,9 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mLVStarEyeInstance = (ListView)getActivity().findViewById(R.id.listHot);
+        new GetStarEyeByMeTask().execute("");
         viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
-        if(null == viewPager)
-        {
-            return;
-        }
         viewPager.setFocusable(true);
         initData();
         initUI();
@@ -279,6 +293,59 @@ public class ChatFragment extends Fragment {
                 //解除drawable对view的引用
                 drawable.setCallback(null);
             }
+        }
+    }
+
+    private class GetStarEyeByMeTask extends AsyncTask<String , Void, String> {
+        protected String doInBackground(String... urls)
+        {
+            String result = "";
+            try
+            {
+                result = WanEyeUtil.doGetStarEyeByMe();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+        protected void onPostExecute(String result)
+        {
+            mJson = result;
+            if("" == result)
+            {
+                return;
+            }
+            try
+            {
+                ArrayList<String> al = getListFromJson(result);
+                mLVStarEyeInstance.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_expandable_list_item_1,al));
+                mLVStarEyeInstance.setOnItemClickListener(new MyOnItemClickedListener());
+                //mLVStarEyeInstance.setOnItemSelectedListener(new MyOnItemSelectedListener());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public ArrayList<String> getListFromJson(String json) throws JSONException
+    {
+        ArrayList<String> result = new ArrayList();
+        JSONArray ja = new JSONArray(json);
+        for(int i = 0; i < ja.length(); i++)
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            result.add(jo.getString("description"));
+        }
+        return result;
+    }
+    public class MyOnItemClickedListener implements AdapterView.OnItemClickListener
+    {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Toast.makeText(getActivity(),""+ i + " :" + l + view.getClass().getSimpleName(),Toast.LENGTH_LONG).show();
         }
     }
 }
