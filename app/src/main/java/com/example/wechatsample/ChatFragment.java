@@ -2,6 +2,7 @@ package com.example.wechatsample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -319,9 +320,11 @@ public class ChatFragment extends Fragment {
             }
             try
             {
-                ArrayList<String> al = getListFromJson(result);
-                mLVStarEyeInstance.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_expandable_list_item_1,al));
-                mLVStarEyeInstance.setOnItemClickListener(new MyOnItemClickedListener());
+                ArrayList<RequestEntity> al = getEntityFromJson(result);
+                for(int i = 0; i < al.size(); i++)
+                {
+                    mLLFoundMain.addView(new EntityProducer(getActivity(),al.get(i)).generateViewByInstances());
+                }
                 //mLVStarEyeInstance.setOnItemSelectedListener(new MyOnItemSelectedListener());
             }
             catch (JSONException e)
@@ -341,11 +344,90 @@ public class ChatFragment extends Fragment {
         }
         return result;
     }
+    public String getStringFromIndex(String key, int i) throws JSONException
+    {
+        JSONArray ja = new JSONArray(mJson);
+        if(i < ja.length())
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            return jo.getString(key);
+        }
+        return "";
+    }
+    public Integer getIntFromIndex(String key, int i) throws JSONException
+    {
+        JSONArray ja = new JSONArray(mJson);
+        if(i < ja.length())
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            return jo.getInt(key);
+        }
+        return -1;
+    }
+    public LatLng getLatLngFromIndex(int i) throws JSONException
+    {
+        LatLng ll = null;
+        JSONArray ja = new JSONArray(mJson);
+        if(i < ja.length())
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            ll = new LatLng(jo.getDouble("latitude"),jo.getDouble("longitude"));
+        }
+        return ll;
+    }
+    public Double getDoubleFromIndex(String key,int i) throws JSONException
+    {
+        JSONArray ja = new JSONArray(mJson);
+        if(i < ja.length())
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            return jo.getDouble(key);
+        }
+        return -1.0;
+    }
     public class MyOnItemClickedListener implements AdapterView.OnItemClickListener
     {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Toast.makeText(getActivity(),""+ i + " :" + l + view.getClass().getSimpleName(),Toast.LENGTH_LONG).show();
+            Bundle bd = new Bundle();
+            try {
+                bd.putCharSequence("description", getStringFromIndex("description", i));
+                bd.putCharSequence("username",getStringFromIndex("ownerUserName",i));
+                bd.putInt("instanceId",getIntFromIndex("id",i));
+                bd.putDouble("latitude", getDoubleFromIndex("latitude", i));
+                bd.putDouble("longitude",getDoubleFromIndex("longitude",i));
+                Intent intent = new Intent(getActivity(),StarEyeDetailActivity.class);
+                intent.putExtras(bd);
+                startActivity(intent);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
+    }
+    public ArrayList<RequestEntity> getEntityFromJson(String json) throws JSONException
+    {
+        ArrayList<RequestEntity> al = new ArrayList<RequestEntity>();
+        JSONArray ja = new JSONArray(json);
+        for(int i = 0; i < ja.length(); i++)
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            al.add(new RequestEntity(
+                    "中山路1097号附近",
+                    jo.getString("description"),
+                    jo.getString("ownerUserName"),
+                    jo.getInt("ownerId"),
+                    jo.getInt("id"),
+                    jo.getDouble("latitude"),
+                    jo.getDouble("longitude"),
+                    null));
+        }
+        return al;
     }
 }

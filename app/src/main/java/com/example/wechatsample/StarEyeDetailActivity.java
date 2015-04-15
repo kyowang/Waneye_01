@@ -7,12 +7,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.baidu.mapapi.model.LatLng;
+
 
 public class StarEyeDetailActivity extends Activity {
     private Intent mIntentMe;
     private Bundle mBundleData;
     private TextView mTVDescription;
     private String mUserName;
+    private Integer mStarEyeInstance;
+    private LatLng mLatLng = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +27,10 @@ public class StarEyeDetailActivity extends Activity {
         mBundleData = mIntentMe.getExtras();
         if(! mBundleData.isEmpty())
         {
-        
+            mUserName = mBundleData.getString("username","");
+            mTVDescription.setText(mBundleData.getCharSequence("description") + "\nBy:" + mUserName);
+            mStarEyeInstance = mBundleData.getInt("instanceId",0);
+            mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
         }
     }
 
