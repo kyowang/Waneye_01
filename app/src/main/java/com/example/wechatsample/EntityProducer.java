@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,8 +30,8 @@ public class EntityProducer {
         RequestEntity re = mRequestEntity;
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, dm);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm);
         params.setMargins(margin, margin, margin, margin);
         RequestEntityLayout ll = new RequestEntityLayout(mContext);
         ll.setEntity(re);
@@ -57,7 +58,9 @@ public class EntityProducer {
 
         final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 90, dm);
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, dm);
-        iv.setLayoutParams(new FrameLayout.LayoutParams(width,height));
+        LinearLayout.LayoutParams paraIv = new LinearLayout.LayoutParams(width, height);
+        //paraIv.setMargins(margin,margin,margin,margin);
+        iv.setLayoutParams(paraIv);
         iv.setImageResource(R.drawable.place_holder);
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         ll.addView(iv);
@@ -65,7 +68,9 @@ public class EntityProducer {
         //inner Linear Layout
         LinearLayout innerLL = new LinearLayout(mContext);
         innerLL.setOrientation(LinearLayout.VERTICAL);
-        innerLL.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams innerLLParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        innerLLParam.setMargins(margin,0,0,0);
+        innerLL.setLayoutParams(innerLLParam);
 
         //address name
         TextView tv = new TextView(mContext);

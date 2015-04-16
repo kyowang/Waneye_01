@@ -69,7 +69,7 @@ public class FoundFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //new GetStarEyeByNearBy().execute("");
+        new GetStarEyeByNearBy().execute("");
     }
 
     private class GetStarEyeByNearBy extends AsyncTask<String , Void, String> {
@@ -96,6 +96,7 @@ public class FoundFragment extends Fragment {
             try
             {
                 ArrayList<RequestEntity> al = getEntityFromJson(result);
+                mLLFoundMain.removeAllViews();
                 for(int i = 0; i < al.size(); i++)
                 {
                     mLLFoundMain.addView(new EntityProducer(getActivity(),al.get(i)).generateViewByInstances());

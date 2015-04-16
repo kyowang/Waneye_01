@@ -91,7 +91,7 @@ public class MainActivity extends FragmentActivity {
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//设置定位模式
         option.setCoorType("bd09ll");//返回的定位结果是百度经纬度,默认值gcj02
         //Don't set ScanSpan, do one time location
-        //option.setScanSpan(5000);//设置发起定位请求的间隔时间为5000ms
+        option.setScanSpan(1000);//设置发起定位请求的间隔时间为5000ms
         option.setIsNeedAddress(true);//返回的定位结果包含地址信息
         option.setNeedDeviceDirect(false);//返回的定位结果包含手机机头的方向
         mLocationClient.setLocOption(option);
@@ -257,6 +257,10 @@ public class MainActivity extends FragmentActivity {
             Log.d(LTAG, sb.toString());
             Toast.makeText(getApplicationContext(),sb.toString(),Toast.LENGTH_LONG).show();
 
+            if(location.getLocType() == BDLocation.TypeNetWorkException || location.getLocType() == BDLocation.TypeCriteriaException || location.getLocType() == BDLocation.TypeOffLineLocationNetworkFail)
+            {
+                return;
+            }
             //store my location to Shared Prefference xml file
             AppCommonData comData = new AppCommonData(MainActivity.this);
             comData.setStringValue("my_latitude",String.valueOf(location.getLatitude()));
@@ -306,6 +310,7 @@ public class MainActivity extends FragmentActivity {
             {
                 Log.d(LTAG,"Location Post failed!!");
                 Toast.makeText(getBaseContext(),"Location Post failed!",Toast.LENGTH_LONG).show();
+                new PostLocationTask().execute("");
             }
         }
     }
