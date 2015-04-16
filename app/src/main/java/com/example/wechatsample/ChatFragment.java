@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,6 +71,7 @@ public class ChatFragment extends Fragment {
     //放圆点的View的list
     private List<View> dotViewsList;
 
+    private LinearLayout mChatLLMain;
     private ListView mLVStarEyeInstance;
     private String mJson = "";
     private ViewPager viewPager;
@@ -99,8 +101,9 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLVStarEyeInstance = (ListView)getActivity().findViewById(R.id.listHot);
+        //mLVStarEyeInstance = (ListView)getActivity().findViewById(R.id.listHot);
         new GetStarEyeByMeTask().execute("");
+        mChatLLMain = (LinearLayout)getActivity().findViewById(R.id.mChatLLMain);
         viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
         viewPager.setFocusable(true);
         initData();
@@ -304,6 +307,7 @@ public class ChatFragment extends Fragment {
             try
             {
                 result = WanEyeUtil.doGetStarEyeByMe();
+                //mJson = result;
             }
             catch (Exception e)
             {
@@ -321,11 +325,11 @@ public class ChatFragment extends Fragment {
             try
             {
                 ArrayList<RequestEntity> al = getEntityFromJson(result);
+                mChatLLMain.removeAllViews();
                 for(int i = 0; i < al.size(); i++)
                 {
-                    mLLFoundMain.addView(new EntityProducer(getActivity(),al.get(i)).generateViewByInstances());
+                    mChatLLMain.addView(new EntityProducer(getActivity(),al.get(i)).generateViewByInstances());
                 }
-                //mLVStarEyeInstance.setOnItemSelectedListener(new MyOnItemSelectedListener());
             }
             catch (JSONException e)
             {
