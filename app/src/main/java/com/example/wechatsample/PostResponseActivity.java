@@ -87,9 +87,9 @@ public class PostResponseActivity extends Activity {
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
                     Bitmap  photo = (Bitmap) bundle.get("data"); //get bitmap
-                    //spath :生成图片取个名字和路径包含类型
-                    //saveImage(Bitmap photo, String spath);
                     mBitmaps.add(photo);
+                    addBitmapToList(photo);
+                    return;
                 } else {
                     Toast.makeText(getApplicationContext(), "请重新选择图片", Toast.LENGTH_LONG).show();
                     return;
@@ -97,6 +97,29 @@ public class PostResponseActivity extends Activity {
             }
             mImageUris.add(uri);
             addImageToList(data.getData());
+        }
+        else if(1 == requestCode)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                Uri uri = data.getData();
+                if(uri == null){
+                    //use bundle to get data
+                    Bundle bundle = data.getExtras();
+                    if (bundle != null) {
+                        Bitmap  photo = (Bitmap) bundle.get("data"); //get bitmap
+                        mBitmaps.add(photo);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "请重新选择图片****", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+                else
+                {
+                    mImageUris.add(uri);
+                    addImageToList(data.getData());
+                }
+            }
         }
     }
     public void addBitmapToList(Bitmap photo)
@@ -197,7 +220,8 @@ public class PostResponseActivity extends Activity {
                                 ((PostResponseActivity)getActivity()).getImageFromAlbum();
                             } else//拍照
                             {
-                                Toast.makeText(getActivity(), "相册", Toast.LENGTH_LONG).show();
+                                ((PostResponseActivity)getActivity()).getImageFromCamera();
+                                //Toast.makeText(getActivity(), "相册", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
