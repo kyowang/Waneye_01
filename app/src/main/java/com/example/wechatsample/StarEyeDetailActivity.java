@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.baidu.mapapi.model.LatLng;
@@ -17,6 +19,7 @@ public class StarEyeDetailActivity extends Activity {
     private String mUserName;
     private Integer mStarEyeInstance;
     private LatLng mLatLng = null;
+    private Button mBtAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,17 @@ public class StarEyeDetailActivity extends Activity {
             mStarEyeInstance = mBundleData.getInt("instanceId",0);
             mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
         }
+        mBtAnswer = (Button)findViewById(R.id.btAnser);
+        mBtAnswer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bd = new Bundle();
+                bd.putInt("instanceId",mStarEyeInstance);
+                Intent intent = new Intent(StarEyeDetailActivity.this,PostResponseActivity.class);
+                intent.putExtras(bd);
+                StarEyeDetailActivity.this.startActivity(intent);
+            }
+        });
     }
 
 
