@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -91,7 +92,7 @@ public  class WanEyeUtil {
     }
     static public String getPicUrlFinish(String instanceId,String picId)
     {
-        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.postStareyePic_uri_prefix + instanceId + WanEyeUtil.postStareyePic_uri_midfix + picId + WanEyeUtil.postStareyePic_uri_postfix;
+        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.postStareyePic_uri_prefix + instanceId + "/pic" + WanEyeUtil.postStareyePic_uri_midfix + picId + WanEyeUtil.postStareyePic_uri_postfix;
     }
     static public String doGetBaiduPoiInfo(String key) throws  IOException
     {
@@ -115,7 +116,31 @@ public  class WanEyeUtil {
         }
         return result;
     }
+    static public String doPostPicOne(Integer instanceId,String data, String contentType) throws IOException
+    {
+        String body;
+        Log.d("MainActivity","doPostPicOne");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        body = hu.httpRequestPostReturnString(getPicUrl(instanceId.toString()), data, contentType, true);
 
+        return body;
+    }
+    static public Integer doPostPicTwo(String url,InputStream is) throws IOException
+    {
+        Integer responseCode;
+        Log.d("MainActivity","doPostPicTwo");
+        HttpUtil hu = new HttpUtil();
+        responseCode = hu.httpRequestPutUploadPic(url,is);
+        return responseCode;
+    }
+    static public Integer doPostPicThree(Integer instanceId, String picId) throws IOException
+    {
+        Integer responseCode;
+        Log.d("MainActivity","doPostPicThree");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        responseCode = hu.httpRequestPutPicId(getPicUrlFinish(instanceId.toString(),picId), true);
+        return responseCode;
+    }
     static public Integer doPostStarEyeInstance(StarEyeInstance sei) throws IOException
     {
         Log.d("MainActivity","doPostStarEyeInstance");

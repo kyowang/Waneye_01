@@ -102,13 +102,20 @@ public class ChatFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //mLVStarEyeInstance = (ListView)getActivity().findViewById(R.id.listHot);
-        new GetStarEyeByMeTask().execute("");
+
         mChatLLMain = (LinearLayout)getActivity().findViewById(R.id.mChatLLMain);
         viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
         viewPager.setFocusable(true);
         initData();
         initUI();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new GetStarEyeByMeTask().execute("");
+    }
+
     /**
      * 开始轮播图切换
      */

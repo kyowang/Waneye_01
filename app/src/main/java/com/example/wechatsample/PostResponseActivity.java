@@ -12,34 +12,89 @@ import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class PostResponseActivity extends Activity {
     private ImageButton mImageButton;
     private LinearLayout mLLContainer;
+    private EditText mETPostWords;
+    private Button mButtonSubmit;
     ArrayList<Uri> mImageUris;
     ArrayList<Bitmap> mBitmaps;
+    private int mInstanceId = -1;
+    private String data = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_response);
+        Intent intent = getIntent();
+        Bundle bd =  intent.getExtras();
+        if(null == bd)
+        {
+            Toast.makeText(getApplicationContext(), "没有找到关联问题，本页无效", Toast.LENGTH_LONG).show();
+        }
+        mInstanceId = bd.getInt("instanceId");
+        mETPostWords = (EditText)findViewById(R.id.et_post_words);
+        mButtonSubmit = (Button) findViewById(R.id.bt_request_submit);
+        mButtonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppCommonData comData = new AppCommonData(PostResponseActivity.this);
+                String words = mETPostWords.getText().toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append("{\"");
+                sb.append("latitude\":");
+                sb.append(comData.getString("my_latitude",""));
+                sb.append(",");
+                sb.append("\"longitude\":");
+                sb.append(comData.getString("my_longitude",""));
+                sb.append(",");
+                sb.append("\"description\":\"");
+                sb.append(words);
+                sb.append("\"}");
+                data = sb.toString();
+                if(mImageUris.size() <= 0)
+                {
+                    Toast.makeText(getApplicationContext(), "没有发现图片，请先添加", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                doSendImages();
+            }
+        });
+
         mImageButton = (ImageButton) findViewById(R.id.ib_add_image);
         mLLContainer = (LinearLayout) findViewById(R.id.ll_images);
         mImageUris = new ArrayList<Uri>();
@@ -104,11 +159,42 @@ public class PostResponseActivity extends Activity {
             {
                 Uri uri = data.getData();
                 if(uri == null){
+                    Toast.makeText(getApplicationContext(), "uri null", Toast.LENGTH_SHORT).show();
                     //use bundle to get data
                     Bundle bundle = data.getExtras();
                     if (bundle != null) {
+                        Toast.makeText(getApplicationContext(), "bundle OK", Toast.LENGTH_SHORT).show();
                         Bitmap  photo = (Bitmap) bundle.get("data"); //get bitmap
-                        mBitmaps.add(photo);
+                        if(! Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+                            Toast.makeText(getApplicationContext(), "没有发现SD卡！", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        File file = new File(Environment.getExternalStorageDirectory(),generateFileName());
+                        File dir = new File(Environment.getExternalStorageDirectory(),"/waneye/");
+                        //file.delete();
+                        try
+                        {
+                            if(!dir.exists())
+                            {
+                                dir.mkdir();
+                            }
+                            file.createNewFile();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            photo.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+
+                            FileOutputStream os = new FileOutputStream(file);
+                            os.write(stream.toByteArray());
+                            os.close();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        Uri tempUri = Uri.fromFile(file);
+                        mImageUris.add(tempUri);
+                        addImageToList(tempUri);
+                        //mBitmaps.add(photo);
+                        //addBitmapToList(photo);
                     } else {
                         Toast.makeText(getApplicationContext(), "请重新选择图片****", Toast.LENGTH_LONG).show();
                         return;
@@ -116,8 +202,9 @@ public class PostResponseActivity extends Activity {
                 }
                 else
                 {
+                    Toast.makeText(getApplicationContext(), "uri OK", Toast.LENGTH_SHORT).show();
                     mImageUris.add(uri);
-                    addImageToList(data.getData());
+                    addImageToList(uri);
                 }
             }
         }
@@ -144,6 +231,15 @@ public class PostResponseActivity extends Activity {
         {
             return;
         }
+    }
+    public String generateFileName()
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        String str = formatter.format(curDate);
+        String picName = "/waneye/capturedPicture_" + str;
+        Log.d("generateFileName",picName);
+        return picName;
     }
     public void addImageToList(Uri uri)
     {
@@ -228,5 +324,103 @@ public class PostResponseActivity extends Activity {
             // Create the AlertDialog object and return it
             return builder.create();
         }
+    }
+    private class doPostPicOneTask extends AsyncTask<InputStream, Void, String> {
+        protected String doInBackground(InputStream... iss)
+        {
+            String result = "";
+            String picUrl = "";
+            String picId = "";
+            if(iss.length <= 0)
+            {
+                return "";
+            }
+            if(null == iss[0])
+            {
+                return "";
+            }
+            try
+            {
+                result = WanEyeUtil.doPostPicOne(mInstanceId, data, "application/json");
+                Log.d("doPostPicOneTask", result);
+                picUrl = getPicUrlFromJson(result);
+                picId = getPicIdFromJson(result);
+                Log.d("doPostPicOneTask", picUrl);
+                Integer status = WanEyeUtil.doPostPicTwo(picUrl,iss[0]);
+                if(status == HttpURLConnection.HTTP_OK)
+                {
+                    status = 0;
+                    status = WanEyeUtil.doPostPicThree(mInstanceId,picId);
+                    if(status == HttpURLConnection.HTTP_OK)
+                    {
+                        Log.d("doPostPicOneTask","success");
+                        return "OK";
+                    }
+                    else
+                    {
+                        return "3";
+                    }
+                }
+                else
+                {
+                    return "2";
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+        protected void onPostExecute(String result)
+        {
+            //mJson = result;
+            String picUrl = "";
+            if("" == result)
+            {
+                return;
+            }
+            else if("OK" == result)
+            {
+                Toast.makeText(getApplicationContext(), "发送成功！", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    public void doSendImages()
+    {
+        Integer result = -1;
+        if(mImageUris.size() <= 0)
+        {
+            Log.d("doSendImages","mImageUris.size() <= 0");
+            return;
+        }
+        Uri uri = mImageUris.get(0);
+        InputStream is = null;
+        Log.d("doSendImages",uri.getPath());
+        try
+        {
+            is = PostResponseActivity.this.getContentResolver().openInputStream(uri);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
+
+        new doPostPicOneTask().execute(is);
+    }
+    public String getPicUrlFromJson(String json) throws JSONException
+    {
+        String url = "";
+        JSONObject jo = new JSONObject(json);
+        url = jo.getString("pictureUrl");
+        return url;
+    }
+    public String getPicIdFromJson(String json) throws JSONException
+    {
+        String url = "";
+        JSONObject jo = new JSONObject(json);
+        url = jo.getString("id");
+        return url;
     }
 }

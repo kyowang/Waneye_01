@@ -16,8 +16,8 @@
             android:layout_height="wrap_content"
             android:inputType="none|textMultiLine"
             android:ems="10"
-            android:id="@+id/editText"
-            android:minLines="4"
+            android:id="@+id/et_post_words"
+            android:minLines="2"
             android:hint="说点什么吧:)" />
         <ScrollView
             android:layout_width="match_parent"
