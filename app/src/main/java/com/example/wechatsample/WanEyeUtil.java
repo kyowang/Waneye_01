@@ -162,7 +162,7 @@ public  class WanEyeUtil {
     }
     static public String doGetStarEyeByMe() throws IOException
     {
-        
+
         String body;
         Log.d("MainActivity","doGetStarEyeByMe");
         HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
