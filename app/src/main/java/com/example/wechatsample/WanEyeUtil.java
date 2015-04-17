@@ -162,10 +162,28 @@ public  class WanEyeUtil {
     }
     static public String doGetStarEyeByMe() throws IOException
     {
+        
         String body;
         Log.d("MainActivity","doGetStarEyeByMe");
         HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
         body = hu.httpRequestGet(getInstanceUrl(),true);
+
+        return body;
+    }
+    static public String doGetStarEyeByLocation(String lat, String lng, String radius) throws IOException
+    {
+        //Log.d("MainActivity","doGetStarEyeByLocation");
+        String body;
+        StringBuilder query = new StringBuilder();
+        query.append("?latitude=");
+        query.append(lat);
+        query.append("&longitude=");
+        query.append(lng);
+        query.append("&searchRadius=");
+        query.append(radius);
+        Log.d("MainActivity","doGetStarEyeByLocation");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        body = hu.httpRequestGet(getInstanceUrl() + query.toString(),true);
 
         return body;
     }

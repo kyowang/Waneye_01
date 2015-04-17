@@ -78,7 +78,18 @@ public class FoundFragment extends Fragment {
             String result = "";
             try
             {
-                result = WanEyeUtil.doGetStarEyeByMe();
+                AppCommonData comData = new AppCommonData(getActivity());
+                String myLat = comData.getString("my_latitude","");
+                String myLng = comData.getString("my_longitude","");
+                if("" == myLat || "" == myLng)
+                {
+                    result = WanEyeUtil.doGetStarEyeByMe();
+                }
+                else
+                {
+                    result = WanEyeUtil.doGetStarEyeByLocation(myLat,myLng,"1000");
+                }
+
             }
             catch (Exception e)
             {
