@@ -1,6 +1,8 @@
 package com.example.wechatsample;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -92,6 +94,41 @@ public class HttpUtil {
             httpConn.disconnect();
         }
         return result;
+    }
+    public Bitmap httpGetImageByUrl(String url_string)
+    {
+        int response = -1;
+        String result ="";
+        Bitmap bitmap = null;
+        in = null;
+        try
+        {
+            URL url = new URL(url_string);
+            urlConnection = url.openConnection();
+            if(! (urlConnection instanceof HttpURLConnection))
+            {
+                throw new IOException("Not an HTTP connection");
+            }
+            httpConn = (HttpURLConnection) urlConnection;
+            httpConn.setAllowUserInteraction(false);
+            httpConn.setInstanceFollowRedirects(true);
+            httpConn.setRequestMethod("GET");
+            httpConn.connect();
+            response = httpConn.getResponseCode();
+            if(response == HttpURLConnection.HTTP_OK)
+            {
+                in = httpConn.getInputStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            httpConn.disconnect();
+        }
+        return bitmap;
     }
     public void closeConn()
     {

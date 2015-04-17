@@ -95,7 +95,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/ivInvite"
             android:layout_weight="1"
-            android:src="@drawable/users_d4d0d0_128" />
+            android:src="@drawable/users_d4d0d0_128"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="wrap_content"
@@ -113,7 +114,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/ivAnswer"
             android:layout_weight="1"
-            android:src="@drawable/comment_d4d0d0_128" />
+            android:src="@drawable/comment_d4d0d0_128"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="wrap_content"
@@ -123,13 +125,18 @@
             android:layout_weight="3" />
         </LinearLayout>
     </LinearLayout>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/llActions">
+
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/llActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/llAnwsers">
 
         </LinearLayout>
+</ScrollView>
 </RelativeLayout>

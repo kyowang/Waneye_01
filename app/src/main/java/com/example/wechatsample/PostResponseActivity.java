@@ -180,7 +180,7 @@ public class PostResponseActivity extends Activity {
                             }
                             file.createNewFile();
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            photo.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
                             FileOutputStream os = new FileOutputStream(file);
                             os.write(stream.toByteArray());

@@ -26,11 +26,11 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/userName"
             android:layout_gravity="center_horizontal"
-            android:hint="user name" />
+            android:hint="user name"
+            android:inputType="text" />
 
         <EditText
             android:layout_width="match_parent"
