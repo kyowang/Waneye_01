@@ -116,6 +116,17 @@ public  class WanEyeUtil {
         }
         return result;
     }
+    static public String doGetInstancePics(String instanceId) throws IOException
+    {
+        Log.d("MainActivity","doGetInstancePics");
+        String result = "";
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        result = hu.httpRequestGet(WanEyeUtil.getPicUrl(instanceId), true);
+        if(hu.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            return "";
+        }
+        return result;
+    }
     static public String doPostPicOne(Integer instanceId,String data, String contentType) throws IOException
     {
         String body;

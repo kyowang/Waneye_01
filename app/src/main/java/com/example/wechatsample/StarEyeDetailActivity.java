@@ -2,14 +2,20 @@ package com.example.wechatsample;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 
 
 public class StarEyeDetailActivity extends Activity {
@@ -40,12 +46,14 @@ public class StarEyeDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Bundle bd = new Bundle();
-                bd.putInt("instanceId",mStarEyeInstance);
+                bd.putInt("instanceId", mStarEyeInstance);
                 Intent intent = new Intent(StarEyeDetailActivity.this,PostResponseActivity.class);
                 intent.putExtras(bd);
                 StarEyeDetailActivity.this.startActivity(intent);
             }
         });
+
+        new doGetInstancesPicsTask().execute("");
     }
 
 
@@ -69,5 +77,28 @@ public class StarEyeDetailActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class doGetInstancesPicsTask extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... strs)
+        {
+            String result = "";
+            try
+            {
+                result = WanEyeUtil.doGetInstancePics(mStarEyeInstance.toString());
+                Log.d("doGetInstancesPicsTask", result);
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+        protected void onPostExecute(String result)
+        {
+            //mJson = result;
+
+        }
     }
 }
