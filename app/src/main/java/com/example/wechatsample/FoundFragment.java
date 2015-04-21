@@ -114,6 +114,10 @@ public class FoundFragment extends Fragment {
                 }
                 //mLVStarEyeInstance.setOnItemSelectedListener(new MyOnItemSelectedListener());
             }
+            catch (NullPointerException e)
+            {
+                e.printStackTrace();
+            }
             catch (JSONException e)
             {
                 e.printStackTrace();

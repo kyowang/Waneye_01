@@ -62,7 +62,7 @@ public class ChatFragment extends Fragment {
     //自动轮播的时间间隔
     private final static int TIME_INTERVAL = 3;
     //自动轮播启用开关
-    private final static boolean isAutoPlay = true;
+    private final static boolean isAutoPlay = false;
 
     //自定义轮播图的资源ID
     private int[] imagesResIds;
@@ -206,18 +206,6 @@ public class ChatFragment extends Fragment {
         public Parcelable saveState() {
             // TODO Auto-generated method stub
             return null;
-        }
-
-        @Override
-        public void startUpdate(View arg0) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void finishUpdate(View arg0) {
-            // TODO Auto-generated method stub
-
         }
 
     }

@@ -20,8 +20,16 @@ import android.widget.TextView;
 public class EntityProducer {
     RequestEntity mRequestEntity;
     Context mContext;
-    public EntityProducer(Context con, RequestEntity re)
+    public EntityProducer(Context con, RequestEntity re) throws NullPointerException
     {
+        if(null == con)
+        {
+            throw new NullPointerException("EntityProducer: Context con is null!");
+        }
+        if(null == re)
+        {
+            throw new NullPointerException("EntityProducer: RequestEntity re is null!");
+        }
         this.mContext = con;
         this.mRequestEntity = re;
     }

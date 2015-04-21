@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
@@ -56,6 +57,8 @@ public class PostResponseActivity extends Activity {
     private int mInstanceId = -1;
     private String data = "";
 
+    private final static int CHOSE_ALBUM = 0;
+    private final static int CHOSE_CAMERA = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,13 +120,13 @@ public class PostResponseActivity extends Activity {
         }
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");//相片类型
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, CHOSE_ALBUM);
     }
     public void getImageFromCamera() {
         String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
             Intent getImageByCamera = new Intent("android.media.action.IMAGE_CAPTURE");
-            startActivityForResult(getImageByCamera, 1);
+            startActivityForResult(getImageByCamera, CHOSE_CAMERA);
         }
         else {
             Toast.makeText(getApplicationContext(), "请确认已经插入SD卡", Toast.LENGTH_LONG).show();
@@ -132,7 +135,7 @@ public class PostResponseActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(0 == requestCode && resultCode == RESULT_OK) //from local image
+        if(CHOSE_ALBUM == requestCode && resultCode == RESULT_OK) //from local image
         {
             Toast.makeText(getBaseContext(),"result : " + data.getData(),Toast.LENGTH_LONG).show();
             Uri uri = data.getData();
@@ -153,24 +156,26 @@ public class PostResponseActivity extends Activity {
             mImageUris.add(uri);
             addImageToList(data.getData());
         }
-        else if(1 == requestCode)
+        else if(CHOSE_CAMERA == requestCode)
         {
             if(resultCode == RESULT_OK)
             {
                 Uri uri = data.getData();
                 if(uri == null){
-                    Toast.makeText(getApplicationContext(), "uri null", Toast.LENGTH_SHORT).show();
+                    Log.d("onActivityResult","uri null");
+                    //Toast.makeText(getApplicationContext(), "uri null", Toast.LENGTH_SHORT).show();
                     //use bundle to get data
                     Bundle bundle = data.getExtras();
                     if (bundle != null) {
-                        Toast.makeText(getApplicationContext(), "bundle OK", Toast.LENGTH_SHORT).show();
-                        Bitmap  photo = (Bitmap) bundle.get("data"); //get bitmap
+                        //Toast.makeText(getApplicationContext(), "bundle OK", Toast.LENGTH_SHORT).show();
+                        Log.d("onActivityResult","bundle OK");
+                        Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
                         if(! Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
                             Toast.makeText(getApplicationContext(), "没有发现SD卡！", Toast.LENGTH_LONG).show();
                             return;
                         }
                         File file = new File(Environment.getExternalStorageDirectory(),generateFileName());
-                        File dir = new File(Environment.getExternalStorageDirectory(),"/waneye/");
+                        File dir = new File(Environment.getExternalStorageDirectory(),"/waneye/captures/");
                         //file.delete();
                         try
                         {
@@ -185,6 +190,9 @@ public class PostResponseActivity extends Activity {
                             FileOutputStream os = new FileOutputStream(file);
                             os.write(stream.toByteArray());
                             os.close();
+                            if(!photo.isRecycled()) {
+                                photo.recycle();
+                            }
                         }
                         catch (Exception e)
                         {
@@ -202,7 +210,8 @@ public class PostResponseActivity extends Activity {
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "uri OK", Toast.LENGTH_SHORT).show();
+                    Log.d("onActivityResult","uri OK");
+                    //Toast.makeText(getApplicationContext(), "uri OK", Toast.LENGTH_SHORT).show();
                     mImageUris.add(uri);
                     addImageToList(uri);
                 }
@@ -241,6 +250,22 @@ public class PostResponseActivity extends Activity {
         Log.d("generateFileName",picName);
         return picName;
     }
+    public int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            if (width > height) {
+                inSampleSize = Math.round((float)height / (float)reqHeight);
+            } else {
+                inSampleSize = Math.round((float)width / (float)reqWidth);
+            }
+        }
+        return inSampleSize;
+    }
     public void addImageToList(Uri uri)
     {
         if(null == uri)
@@ -248,11 +273,18 @@ public class PostResponseActivity extends Activity {
             return;
         }
         DisplayMetrics dm = PostResponseActivity.this.getResources().getDisplayMetrics();
+        final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
+        final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
         final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm);
-        Drawable d;
+        Bitmap d;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         try
         {
-            d = Drawable.createFromStream(PostResponseActivity.this.getContentResolver().openInputStream(uri), null);
+            BitmapFactory.decodeStream(PostResponseActivity.this.getContentResolver().openInputStream(uri),null,options);
+            options.inSampleSize = calculateInSampleSize(options,width,height);
+            options.inJustDecodeBounds = false;
+            d = BitmapFactory.decodeStream(PostResponseActivity.this.getContentResolver().openInputStream(uri),null,options);
         }
         catch(Exception e)
         {
@@ -260,12 +292,11 @@ public class PostResponseActivity extends Activity {
             return;
         }
         ImageView iv = new ImageView(PostResponseActivity.this);
-        final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
-        final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
+
         LinearLayout.LayoutParams paraIv = new LinearLayout.LayoutParams(width, height);
         paraIv.setMargins(margin, 0, margin, 0);
         iv.setLayoutParams(paraIv);
-        iv.setImageDrawable(d);
+        iv.setImageBitmap(d);
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         mLLContainer.addView(iv,0);
     }
