@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -99,6 +100,21 @@ public class ImageUtil {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+    public static Bitmap decodeSampleBitmapFromStream(InputStream in, int reqWidth, int reqHeight)
+    {
+        BufferedInputStream bin = new BufferedInputStream(in, 8 * 1024);
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(bin, null,options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        Log.d("decodeStream",options.inSampleSize + "");
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeStream(bin, null, options);
     }
     public static Bitmap decodeSampledBitmapFromUri(
             Context context,

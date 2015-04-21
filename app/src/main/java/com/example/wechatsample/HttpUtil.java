@@ -118,7 +118,8 @@ public class HttpUtil {
             if(response == HttpURLConnection.HTTP_OK)
             {
                 in = httpConn.getInputStream();
-                bitmap = BitmapFactory.decodeStream(in);
+                bitmap = ImageUtil.decodeSampleBitmapFromStream(in,width,height);
+                //BitmapFactory.decodeStream(in);
             }
         }
         catch(Exception e)
