@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -122,6 +124,8 @@ public class StarEyeDetailActivity extends Activity {
     public ArrayList<LinearLayout> getLinearLayoutsFromJson(String json) throws JSONException
     {
         ArrayList<LinearLayout> lls = new ArrayList<LinearLayout>();
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
         JSONArray ja = new JSONArray(json);
         for( int i = 0; i < ja.length(); i++)
         {
@@ -130,7 +134,7 @@ public class StarEyeDetailActivity extends Activity {
             String desc = jo.getString("description");
             String picUrl = jo.getString("pictureUrl");
             HttpUtil hu = new HttpUtil();
-            DetailResponseProducer dr = new DetailResponseProducer(getBaseContext(),un,desc,hu.httpGetImageByUrl(picUrl));
+            DetailResponseProducer dr = new DetailResponseProducer(getBaseContext(),un,desc,hu.httpGetImageByUrl(picUrl,height,height));
             lls.add(dr.generateViewByInstances());
         }
         return lls;

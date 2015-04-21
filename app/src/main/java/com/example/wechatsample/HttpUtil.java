@@ -95,7 +95,7 @@ public class HttpUtil {
         }
         return result;
     }
-    public Bitmap httpGetImageByUrl(String url_string)
+    public Bitmap httpGetImageByUrl(String url_string, int width, int height)
     {
         int response = -1;
         String result ="";

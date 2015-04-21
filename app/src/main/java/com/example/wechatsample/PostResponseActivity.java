@@ -277,14 +277,9 @@ public class PostResponseActivity extends Activity {
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
         final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm);
         Bitmap d;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
         try
         {
-            BitmapFactory.decodeStream(PostResponseActivity.this.getContentResolver().openInputStream(uri),null,options);
-            options.inSampleSize = calculateInSampleSize(options,width,height);
-            options.inJustDecodeBounds = false;
-            d = BitmapFactory.decodeStream(PostResponseActivity.this.getContentResolver().openInputStream(uri),null,options);
+            d = ImageUtil.decodeSampledBitmapFromUri(PostResponseActivity.this,uri,width,height);
         }
         catch(Exception e)
         {

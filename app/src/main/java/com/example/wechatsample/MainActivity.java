@@ -110,6 +110,8 @@ public class MainActivity extends FragmentActivity {
             Log.d(LTAG,auth);
             WanEyeUtil.setCookieAuth(auth);
         }
+        int maxMemory = (int) Runtime.getRuntime().maxMemory();
+        Log.d(LTAG,""+maxMemory);
 	}
 
 	/**
