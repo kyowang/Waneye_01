@@ -35,6 +35,7 @@ import java.util.jar.Attributes;
 public class FoundFragment extends Fragment {
     private LinearLayout mLLFoundMain;
     private String mJson = "";
+    private ArrayList<GetStarEyeByNearBy> getNearBy;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class FoundFragment extends Fragment {
 		v.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
 		fl.addView(v);
 		return fl;*/
+        getNearBy = new ArrayList<GetStarEyeByNearBy>();
         LinearLayout view = (LinearLayout)inflater.inflate(R.layout.found_fragment_activity, container, false );
         return view;
 	}
@@ -63,13 +65,30 @@ public class FoundFragment extends Fragment {
         mLLFoundMain = (LinearLayout) getActivity().findViewById(R.id.llFoundMain);
         //RequestEntity re = new RequestEntity("ss","hashjfjkdsfhksjdhfksdfhskjdhfkadad","jinluu",1,1,11.111,22.222,null);
         //mLLFoundMain.addView(new EntityProducer(getActivity(),re).generateViewByInstances());
-        new GetStarEyeByNearBy().execute("");
+        GetStarEyeByNearBy task = new GetStarEyeByNearBy();
+        getNearBy.add(task);
+        task.execute("");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        new GetStarEyeByNearBy().execute("");
+        GetStarEyeByNearBy task = new GetStarEyeByNearBy();
+        getNearBy.add(task);
+        task.execute("");
+    }
+
+    @Override
+    public void onDestroy() {
+        GetStarEyeByNearBy temp = null;
+        for(int i = 0; i< getNearBy.size(); i++)
+        {
+            temp = getNearBy.get(i);
+            if (temp != null && temp.getStatus() != AsyncTask.Status.FINISHED)
+                temp.cancel(true);
+        }
+
+        super.onDestroy();
     }
 
     private class GetStarEyeByNearBy extends AsyncTask<String , Void, String> {
@@ -89,7 +108,10 @@ public class FoundFragment extends Fragment {
                 {
                     result = WanEyeUtil.doGetStarEyeByLocation(myLat,myLng,"1000");
                 }
-
+                if(isCancelled())
+                {
+                    return "";
+                }
             }
             catch (Exception e)
             {

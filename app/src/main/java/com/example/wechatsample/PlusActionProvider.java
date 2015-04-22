@@ -44,7 +44,7 @@ public class PlusActionProvider extends ActionProvider {
 					}
 				});
 		subMenu.add(context.getString(R.string.plus_register))
-				.setIcon(R.drawable.ofm_video_icon)
+				.setIcon(R.drawable.ofm_add_icon)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
@@ -52,16 +52,16 @@ public class PlusActionProvider extends ActionProvider {
 						return false;
 					}
 				});
-		subMenu.add(context.getString(R.string.plus_scan))
-				.setIcon(R.drawable.ofm_qrcode_icon)
+		subMenu.add(context.getString(R.string.plus_setting))
+				.setIcon(R.drawable.ofm_setting_icon)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
 						return false;
 					}
 				});
-		subMenu.add(context.getString(R.string.plus_take_photo))
-				.setIcon(R.drawable.ofm_camera_icon)
+		subMenu.add(context.getString(R.string.action_personal))
+				.setIcon(R.drawable.user_cccccc_64)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {

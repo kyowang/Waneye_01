@@ -56,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  * @author guolin
  */
 public class ChatFragment extends Fragment {
-
+    private ArrayList<GetStarEyeByMeTask> myInstanceTask;
     //轮播图图片数量
     private final static int IMAGE_COUNT = 3;
     //自动轮播的时间间隔
@@ -102,7 +102,7 @@ public class ChatFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //mLVStarEyeInstance = (ListView)getActivity().findViewById(R.id.listHot);
-
+        myInstanceTask = new ArrayList<GetStarEyeByMeTask>();
         mChatLLMain = (LinearLayout)getActivity().findViewById(R.id.mChatLLMain);
         viewPager = (ViewPager)getActivity().findViewById(R.id.viewPager);
         viewPager.setFocusable(true);
@@ -113,7 +113,9 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        new GetStarEyeByMeTask().execute("");
+        GetStarEyeByMeTask temp = new GetStarEyeByMeTask();
+        myInstanceTask.add(temp);
+        temp.execute("");
     }
 
     /**
@@ -141,6 +143,20 @@ public class ChatFragment extends Fragment {
         imageViewsList = new ArrayList<ImageView>();
         dotViewsList = new ArrayList<View>();
 
+    }
+
+    @Override
+    public void onDestroy() {
+        GetStarEyeByMeTask temp = null;
+        for(int i = 0 ; i < myInstanceTask.size(); i++)
+        {
+            temp = myInstanceTask.get(i);
+            if(temp != null && temp.getStatus() != AsyncTask.Status.FINISHED)
+            {
+                temp.cancel(true);
+            }
+        }
+        super.onDestroy();
     }
 
     /**
@@ -307,6 +323,10 @@ public class ChatFragment extends Fragment {
             catch (Exception e)
             {
                 e.printStackTrace();
+            }
+            if(isCancelled())
+            {
+                return "";
             }
             return result;
         }
