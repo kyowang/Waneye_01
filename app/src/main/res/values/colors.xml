@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_tab_pressed">#1874CDFF</color>
+    <color name="background_tab_pressed">#6633B5E5</color>
     <!-- <color name="background_tab_pressed">#6633B5E5</color> -->
     <color name="commom_background_color">#CCCCCC</color>
 </resources>
