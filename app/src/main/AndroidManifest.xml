@@ -77,35 +77,36 @@
         </activity>
 
         <!-- Home -->
+        <!--
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="YPY855zFichDsDZW7Qqc2r09" />
-
-        <!-- Rayootech -->
-        <!--
-<meta-data
-android:name="com.baidu.lbsapi.API_KEY"
-android:value="0lZNE2OGYijSjYsuPioKyBeG" />
         -->
-<activity
-android:name=".PostStarEyeReuquestActivity"
-android:label="@string/title_activity_post_star_eye_reuquest" >
-</activity>
+        <!-- Rayootech -->
 
-<service
-android:name="com.baidu.location.f"
-android:enabled="true"
-android:process=":remote" >
-</service>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="0lZNE2OGYijSjYsuPioKyBeG" />
 
-<activity
-android:name=".StarEyeDetailActivity"
-android:label="@string/title_activity_star_eye_detail" >
-</activity>
-<activity
-android:name=".PostResponseActivity"
-android:label="@string/title_activity_post_response" >
-</activity>
-</application>
+        <activity
+            android:name=".PostStarEyeReuquestActivity"
+            android:label="@string/title_activity_post_star_eye_reuquest" >
+        </activity>
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+
+        <activity
+            android:name=".StarEyeDetailActivity"
+            android:label="@string/title_activity_star_eye_detail" >
+        </activity>
+        <activity
+            android:name=".PostResponseActivity"
+            android:label="@string/title_activity_post_response" >
+        </activity>
+    </application>
 
 </manifest>
