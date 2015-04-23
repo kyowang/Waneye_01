@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -56,6 +57,7 @@ public class PostResponseActivity extends Activity {
     ArrayList<Bitmap> mBitmaps;
     private int mInstanceId = -1;
     private String data = "";
+    private Uri uriCaptureImage = null;
 
     private final static int CHOSE_ALBUM = 0;
     private final static int CHOSE_CAMERA = 1;
@@ -126,6 +128,8 @@ public class PostResponseActivity extends Activity {
         String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
             Intent getImageByCamera = new Intent("android.media.action.IMAGE_CAPTURE");
+            uriCaptureImage = getOutputMediaFileUri();
+            getImageByCamera.putExtra(MediaStore.EXTRA_OUTPUT,uriCaptureImage); // set the image file name
             startActivityForResult(getImageByCamera, CHOSE_CAMERA);
         }
         else {
@@ -160,7 +164,7 @@ public class PostResponseActivity extends Activity {
         {
             if(resultCode == RESULT_OK)
             {
-                Uri uri = data.getData();
+                Uri uri = uriCaptureImage;
                 if(uri == null){
                     Log.d("onActivityResult","uri null");
                     //Toast.makeText(getApplicationContext(), "uri null", Toast.LENGTH_SHORT).show();
@@ -174,15 +178,10 @@ public class PostResponseActivity extends Activity {
                             Toast.makeText(getApplicationContext(), "没有发现SD卡！", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        File file = new File(Environment.getExternalStorageDirectory(),generateFileName());
-                        File dir = new File(Environment.getExternalStorageDirectory(),"/waneye/captures/");
+                        File file = generateFileName();
                         //file.delete();
                         try
                         {
-                            if(!dir.exists())
-                            {
-                                dir.mkdir();
-                            }
                             file.createNewFile();
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -218,6 +217,12 @@ public class PostResponseActivity extends Activity {
             }
         }
     }
+
+    /** Create a file Uri for saving an image or video */
+    private Uri getOutputMediaFileUri(){
+        return Uri.fromFile(generateFileName());
+    }
+
     public void addBitmapToList(Bitmap photo)
     {
         if(null != photo)
@@ -241,14 +246,30 @@ public class PostResponseActivity extends Activity {
             return;
         }
     }
-    public String generateFileName()
+    public File generateFileName()
     {
-        SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMddHHmmss");
+        Integer i = 1;
+        String sysExtPath = Environment.getExternalStorageDirectory().getPath();
+        //Log.d("generateFileName:",sysExtPath);
+        String sysPicPath = Environment.DIRECTORY_DCIM + File.separator + "waneye";
+        //Log.d("generateFileName:",sysPicPath);
+        SimpleDateFormat formatter = new SimpleDateFormat ("yyyyMMdd_HHmmss");
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         String str = formatter.format(curDate);
-        String picName = "/waneye/capturedPicture_" + str;
+        String dir = sysExtPath + File.separator + sysPicPath;
+        String picName =  dir + "/Picture_" + str + ".JPG";
+        File directory = new File(dir);
+        if(! directory.exists())
+        {
+            directory.mkdir();
+        }
+        while(new File(picName).exists())
+        {
+            picName =   "/Picture_" + str + i.toString()  + ".JPG";
+            i++;
+        }
         Log.d("generateFileName",picName);
-        return picName;
+        return new File(picName);
     }
     public int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {

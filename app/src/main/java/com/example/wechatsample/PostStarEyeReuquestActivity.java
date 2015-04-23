@@ -509,7 +509,7 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             Log.d(LTAG,result);
             try
             {
-                locAddapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,parseSearchJson(result));
+                locAddapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.spinner_item,parseSearchJson(result));
             }
             catch (Exception e)
             {
@@ -518,6 +518,7 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             }
             sp_address.setAdapter(locAddapter);
             sp_address.setOnItemSelectedListener(new MyOnItemSelectedListener());
+            sp_address.setVisibility(View.VISIBLE);
             return;
         }
     }

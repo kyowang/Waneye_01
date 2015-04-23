@@ -26,4 +26,5 @@
     <string name="title_activity_star_eye_detail">请求详情</string>
     <string name="title_activity_post_response">帮助是一种美德哦</string>
     <string name="path_captures_path">/waneye/captures/</string>
+    <string name="location_spinner_name">选择位置</string>
 </resources>
