@@ -118,7 +118,24 @@ public class HttpUtil {
             if(response == HttpURLConnection.HTTP_OK)
             {
                 in = httpConn.getInputStream();
-                bitmap = ImageUtil.decodeSampleBitmapFromStream(in,width,height);
+                int sampleSize = ImageUtil.decodeSizeOnlyFromStream(in,width, height);
+                httpConn.disconnect();
+
+                //once more
+                in = null;
+                urlConnection = url.openConnection();
+                if(! (urlConnection instanceof HttpURLConnection))
+                {
+                    throw new IOException("Not an HTTP connection");
+                }
+                httpConn = (HttpURLConnection) urlConnection;
+                httpConn.setAllowUserInteraction(false);
+                httpConn.setInstanceFollowRedirects(true);
+                httpConn.setRequestMethod("GET");
+                httpConn.connect();
+
+                in = httpConn.getInputStream();
+                bitmap = ImageUtil.decodeSampleBitmapFromStream(in, sampleSize);
                 //BitmapFactory.decodeStream(in);
             }
         }

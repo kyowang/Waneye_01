@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,20 +102,32 @@ public class ImageUtil {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
     }
-    public static Bitmap decodeSampleBitmapFromStream(InputStream in, int reqWidth, int reqHeight)
+    public static Bitmap decodeSampleBitmapFromStream(InputStream in, int sampleSize) throws IOException
     {
         BufferedInputStream bin = new BufferedInputStream(in, 8 * 1024);
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(bin, null,options);
-
+        //options.inJustDecodeBounds = true;
+        //BitmapFactory.decodeStream(bin, null,options);
+        //Log.d("Debug: width = ", options.outWidth + " height= " + options.outHeight);
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = sampleSize;//calculateInSampleSize(options, reqWidth, reqHeight);
         Log.d("decodeStream",options.inSampleSize + "");
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
+        //bin.close();
         return BitmapFactory.decodeStream(bin, null, options);
+    }
+    public static int decodeSizeOnlyFromStream(InputStream in , int reqWidth, int reqHeight)
+    {
+        int sampleSize = 1;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(in, null,options);
+        //Log.d("Debug: width = ", options.outWidth + " height= " + options.outHeight);
+        //Calculate inSampleSize
+        sampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        return sampleSize;
     }
     public static Bitmap decodeSampledBitmapFromUri(
             Context context,

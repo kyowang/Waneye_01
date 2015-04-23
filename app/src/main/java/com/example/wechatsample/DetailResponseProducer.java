@@ -2,8 +2,10 @@ package com.example.wechatsample;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,7 +25,16 @@ public class DetailResponseProducer {
         this.mContext = con;
         this.mUserName = un;
         this.mDescription = desc;
-        this.mImage = image;
+        //Log.d("DetailResponseProducer", image.getByteCount()+"");
+        if(null == image)
+        {
+            this.mImage = BitmapFactory.decodeResource(con.getResources(),R.drawable.place_holder);
+        }
+        else
+        {
+            this.mImage = image;
+        }
+
     }
     public LinearLayout generateViewByInstances() {
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();

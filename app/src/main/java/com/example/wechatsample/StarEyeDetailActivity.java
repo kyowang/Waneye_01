@@ -126,6 +126,7 @@ public class StarEyeDetailActivity extends Activity {
         ArrayList<LinearLayout> lls = new ArrayList<LinearLayout>();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
+        Log.d("getLinearLayoutsFromJson: height = ",height+"");
         JSONArray ja = new JSONArray(json);
         for( int i = 0; i < ja.length(); i++)
         {
