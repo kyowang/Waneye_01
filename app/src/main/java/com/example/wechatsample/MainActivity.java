@@ -132,9 +132,9 @@ public class MainActivity extends FragmentActivity {
 		tabs.setTextSize((int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_SP, 16, dm));
 		// 设置Tab Indicator的颜色
-		tabs.setIndicatorColor(Color.parseColor("#45c01a"));
+		tabs.setIndicatorColor(Color.parseColor("#33b5e5"));
 		// 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-		tabs.setSelectedTextColor(Color.parseColor("#45c01a"));
+		tabs.setSelectedTextColor(Color.parseColor("#33b5e5"));
 		// 取消点击Tab时的背景色
 		tabs.setTabBackground(0);
 	}
@@ -145,7 +145,8 @@ public class MainActivity extends FragmentActivity {
 			super(fm);
 		}
 
-		private final String[] titles = { "首页", "发现", "消息" };
+		//private final String[] titles = { "首页", "发现", "消息" };
+		private final String[] titles = { "首页", "附近" };
 
 		@Override
 		public CharSequence getPageTitle(int position) {

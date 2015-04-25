@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class LoginActivity extends Activity {
     private Button login;
     private String um;
     private String pw;
+    private TextView gotoRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +33,13 @@ public class LoginActivity extends Activity {
         passwd = (EditText)findViewById(R.id.password);
         tv = (TextView)findViewById(R.id.textView);
         login = (Button)findViewById(R.id.login);
-
+        gotoRegister = (TextView)findViewById(R.id.tvGoToRegister);
+        gotoRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
+            }
+        });
         login.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -92,18 +100,21 @@ public class LoginActivity extends Activity {
             if(result)
             {
                 tv.setText("Login success...");
+                tv.setVisibility(View.VISIBLE);
                 AppCommonData comData = new AppCommonData(LoginActivity.this);
                 comData.setStringValue("username",um);
                 comData.setStringValue("password",pw);
                 comData.setStringValue("authCookie",WanEyeUtil.getCookieAuth());
                 //comData.setStringValue("phoneNumber",rp.getPhoneNumber());
                 comData.commit();
+                Toast.makeText(LoginActivity.this,"登录成功!", Toast.LENGTH_SHORT);
+                LoginActivity.this.finish();
             }
             else
             {
                 tv.setText("Login failed...");
+                tv.setVisibility(View.VISIBLE);
             }
-            tv.setVisibility(View.VISIBLE);
         }
     }
 }

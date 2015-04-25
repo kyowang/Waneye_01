@@ -51,10 +51,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:logo="@drawable/globe_cccccc_96"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        >
         <activity
             android:name=".MainActivity"
             android:icon="@drawable/globe_cccccc_96"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,6 +66,7 @@
         </activity>
         <activity
             android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="com.example.wechatsample.LoginActivity" />
@@ -73,23 +76,25 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_register" >
         </activity>
 
         <!-- Home -->
-        <!--
+
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="YPY855zFichDsDZW7Qqc2r09" />
-         -->
-        <!-- Rayootech -->
 
+        <!-- Rayootech -->
+        <!--
                 <meta-data
                     android:name="com.baidu.lbsapi.API_KEY"
                     android:value="0lZNE2OGYijSjYsuPioKyBeG" />
-
+         -->
         <activity
             android:name=".PostStarEyeReuquestActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_post_star_eye_reuquest" >
         </activity>
 
@@ -101,10 +106,12 @@
 
         <activity
             android:name=".StarEyeDetailActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_star_eye_detail" >
         </activity>
         <activity
             android:name=".PostResponseActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_post_response" >
         </activity>
     </application>

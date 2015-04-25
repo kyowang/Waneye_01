@@ -52,6 +52,7 @@ public class PlusActionProvider extends ActionProvider {
 						return false;
 					}
 				});
+        /*
 		subMenu.add(context.getString(R.string.plus_setting))
 				.setIcon(R.drawable.ofm_setting_icon)
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -67,7 +68,7 @@ public class PlusActionProvider extends ActionProvider {
 					public boolean onMenuItemClick(MenuItem item) {
 						return false;
 					}
-				});
+				});*/
 	}
 
 	@Override

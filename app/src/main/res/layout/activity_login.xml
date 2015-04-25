@@ -50,6 +50,20 @@
             android:clickable="true"
             android:enabled="true" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/tvGoToRegister"
+            android:text="unregistered user? click to register"
+            android:padding="8dp"
+            android:clickable="true"
+            android:linksClickable="false"
+            android:textStyle="bold|italic"
+            android:background="#ffb6efff"
+            android:layout_margin="3dp"
+            android:textColor="@color/background_tab_pressed" />
+
     </LinearLayout>
 
 </RelativeLayout>
