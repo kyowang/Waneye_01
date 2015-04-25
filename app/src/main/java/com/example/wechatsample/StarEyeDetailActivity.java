@@ -32,6 +32,7 @@ public class StarEyeDetailActivity extends Activity {
     private TextView mTVDescription;
     private String mUserName;
     private Integer mStarEyeInstance;
+    private TextView mTVByUser;
     private LatLng mLatLng = null;
     private Button mBtAnswer;
     private LinearLayout mLLAnswers;
@@ -41,12 +42,14 @@ public class StarEyeDetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_eye_detail);
         mTVDescription = (TextView) findViewById(R.id.tv_description);
+        mTVByUser = (TextView) findViewById(R.id.tv_byuser);
         mIntentMe = getIntent();
         mBundleData = mIntentMe.getExtras();
         if(! mBundleData.isEmpty())
         {
             mUserName = mBundleData.getString("username","");
-            mTVDescription.setText(mBundleData.getCharSequence("description") + "\nBy:" + mUserName);
+            mTVDescription.setText(mBundleData.getCharSequence("description"));
+            mTVByUser.setText("By:" + mUserName);
             mStarEyeInstance = mBundleData.getInt("instanceId",0);
             mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
         }
@@ -126,7 +129,7 @@ public class StarEyeDetailActivity extends Activity {
         ArrayList<LinearLayout> lls = new ArrayList<LinearLayout>();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
-        Log.d("getLinearLayoutsFromJson: height = ",height+"");
+        Log.d("get: height = ",height+"");
         JSONArray ja = new JSONArray(json);
         for( int i = 0; i < ja.length(); i++)
         {
