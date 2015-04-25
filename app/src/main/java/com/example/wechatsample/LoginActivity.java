@@ -107,7 +107,7 @@ public class LoginActivity extends Activity {
                 comData.setStringValue("authCookie",WanEyeUtil.getCookieAuth());
                 //comData.setStringValue("phoneNumber",rp.getPhoneNumber());
                 comData.commit();
-                Toast.makeText(LoginActivity.this,"登录成功!", Toast.LENGTH_SHORT);
+                Toast.makeText(LoginActivity.this,"登录成功!", Toast.LENGTH_SHORT).show();
                 LoginActivity.this.finish();
             }
             else

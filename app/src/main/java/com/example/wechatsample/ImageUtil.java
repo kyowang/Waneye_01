@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.DebugUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -42,6 +43,7 @@ public class ImageUtil {
             // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
             // 一定都会大于等于目标的宽和高。
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+            Log.d("inSampleSize: ", inSampleSize + "");
         }
         return inSampleSize;
     }

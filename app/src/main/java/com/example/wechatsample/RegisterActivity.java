@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -136,17 +137,24 @@ public class RegisterActivity extends Activity {
             if(result == HttpURLConnection.HTTP_OK)
             {
                 alarm.setText("Register success...");
+                alarm.setVisibility(View.VISIBLE);
                 AppCommonData comData = new AppCommonData(RegisterActivity.this);
                 comData.setStringValue("username",rp.getUsername());
+                comData.setStringValue("password","");
                 //comData.setStringValue("email",rp.getEmail());
                 //comData.setStringValue("phoneNumber",rp.getPhoneNumber());
                 comData.commit();
+                Toast.makeText(RegisterActivity.this,"注册成功，赶紧去登陆吧",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+                startActivity(intent);
+                RegisterActivity.this.finish();
             }
             else
             {
                 alarm.setText("Register failed...");
+                alarm.setVisibility(View.VISIBLE);
             }
-            alarm.setVisibility(View.VISIBLE);
+
         }
     }
 }

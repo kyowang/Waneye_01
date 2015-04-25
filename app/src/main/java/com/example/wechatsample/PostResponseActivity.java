@@ -54,7 +54,6 @@ public class PostResponseActivity extends Activity {
     private EditText mETPostWords;
     private Button mButtonSubmit;
     ArrayList<Uri> mImageUris;
-    ArrayList<Bitmap> mBitmaps;
     private int mInstanceId = -1;
     private String data = "";
     private Uri uriCaptureImage = null;
@@ -103,7 +102,6 @@ public class PostResponseActivity extends Activity {
         mImageButton = (ImageButton) findViewById(R.id.ib_add_image);
         mLLContainer = (LinearLayout) findViewById(R.id.ll_images);
         mImageUris = new ArrayList<Uri>();
-        mBitmaps = new ArrayList<Bitmap>();
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,19 +143,8 @@ public class PostResponseActivity extends Activity {
             Uri uri = data.getData();
             if (null == uri)
             {
-                //use bundle to get data
-                Bundle bundle = data.getExtras();
-                if (bundle != null) {
-                    Bitmap  photo = (Bitmap) bundle.get("data"); //get bitmap
-                    mBitmaps.add(photo);
-                    addBitmapToList(photo);
-                    return;
-                } else {
-                    Toast.makeText(getApplicationContext(), "请重新选择图片", Toast.LENGTH_LONG).show();
-                    return;
-                }
+                return;
             }
-            mImageUris.add(uri);
             addImageToList(data.getData());
         }
         else if(CHOSE_CAMERA == requestCode)
@@ -167,51 +154,11 @@ public class PostResponseActivity extends Activity {
                 Uri uri = uriCaptureImage;
                 if(uri == null){
                     Log.d("onActivityResult","uri null");
-                    //Toast.makeText(getApplicationContext(), "uri null", Toast.LENGTH_SHORT).show();
-                    //use bundle to get data
-                    Bundle bundle = data.getExtras();
-                    if (bundle != null) {
-                        //Toast.makeText(getApplicationContext(), "bundle OK", Toast.LENGTH_SHORT).show();
-                        Log.d("onActivityResult","bundle OK");
-                        Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
-                        if(! Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-                            Toast.makeText(getApplicationContext(), "没有发现SD卡！", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        File file = generateFileName();
-                        //file.delete();
-                        try
-                        {
-                            file.createNewFile();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-                            FileOutputStream os = new FileOutputStream(file);
-                            os.write(stream.toByteArray());
-                            os.close();
-                            if(!photo.isRecycled()) {
-                                photo.recycle();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                        Uri tempUri = Uri.fromFile(file);
-                        mImageUris.add(tempUri);
-                        addImageToList(tempUri);
-                        //mBitmaps.add(photo);
-                        //addBitmapToList(photo);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "请重新选择图片****", Toast.LENGTH_LONG).show();
-                        return;
-                    }
+                    return;
                 }
                 else
                 {
                     Log.d("onActivityResult","uri OK");
-                    //Toast.makeText(getApplicationContext(), "uri OK", Toast.LENGTH_SHORT).show();
-                    mImageUris.add(uri);
                     addImageToList(uri);
                 }
             }
@@ -223,29 +170,6 @@ public class PostResponseActivity extends Activity {
         return Uri.fromFile(generateFileName());
     }
 
-    public void addBitmapToList(Bitmap photo)
-    {
-        if(null != photo)
-        {
-            DisplayMetrics dm = PostResponseActivity.this.getResources().getDisplayMetrics();
-            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm);
-
-            ImageView iv = new ImageView(PostResponseActivity.this);
-            final int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
-            final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
-            LinearLayout.LayoutParams paraIv = new LinearLayout.LayoutParams(width, height);
-            paraIv.setMargins(margin, 0, margin, 0);
-            iv.setLayoutParams(paraIv);
-            //iv.setImageDrawable(d);
-            iv.setImageBitmap(photo);
-            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            mLLContainer.addView(iv,0);
-        }
-        else
-        {
-            return;
-        }
-    }
     public File generateFileName()
     {
         Integer i = 1;
@@ -298,8 +222,17 @@ public class PostResponseActivity extends Activity {
         final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, dm);
         final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm);
         Bitmap d;
+        Bitmap saveVersion;
         try
         {
+            File file = generateFileName();
+            Uri small = Uri.fromFile(file);
+            saveVersion = ImageUtil.decodeSampledBitmapFromUri(PostResponseActivity.this,uri,480,480);
+            FileOutputStream osFile = new FileOutputStream(file);
+            saveVersion.compress(Bitmap.CompressFormat.JPEG,80,osFile);
+            osFile.flush();
+            osFile.close();
+            mImageUris.add(small);
             d = ImageUtil.decodeSampledBitmapFromUri(PostResponseActivity.this,uri,width,height);
         }
         catch(Exception e)
