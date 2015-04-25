@@ -227,9 +227,9 @@ public class PostResponseActivity extends Activity {
         {
             File file = generateFileName();
             Uri small = Uri.fromFile(file);
-            saveVersion = ImageUtil.decodeSampledBitmapFromUri(PostResponseActivity.this,uri,480,480);
+            saveVersion = ImageUtil.decodeSampledBitmapFromUri(PostResponseActivity.this,uri,960,960);
             FileOutputStream osFile = new FileOutputStream(file);
-            saveVersion.compress(Bitmap.CompressFormat.JPEG,80,osFile);
+            saveVersion.compress(Bitmap.CompressFormat.JPEG,100,osFile);
             osFile.flush();
             osFile.close();
             mImageUris.add(small);
