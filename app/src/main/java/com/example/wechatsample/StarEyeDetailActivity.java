@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,8 @@ public class StarEyeDetailActivity extends Activity {
     private LatLng mLatLng = null;
     private Button mBtAnswer;
     private LinearLayout mLLAnswers;
+    private Button mBTComment;
+    private EditText mETComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,30 @@ public class StarEyeDetailActivity extends Activity {
             mStarEyeInstance = mBundleData.getInt("instanceId",0);
             mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
         }
+        mETComment = (EditText) findViewById(R.id.et_comment);
+        mETComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mETComment.setFocusable(true);
+            }
+        });
+        mBTComment = (Button) findViewById(R.id.bt_send_comment);
+        mBTComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bd = new Bundle();
+                bd.putInt("instanceId", mStarEyeInstance);
+                Intent intent = new Intent(StarEyeDetailActivity.this,PostResponseActivity.class);
+                intent.putExtras(bd);
+                //StarEyeDetailActivity.this.startActivity(intent);
+                if(mETComment.getText().toString().equals(""))
+                {
+                    Toast.makeText(getBaseContext(),"请输入内容",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new doPostChartTask().execute(mETComment.getText().toString());
+            }
+        });
         mLLAnswers = (LinearLayout)findViewById(R.id.llAnwsers);
         mBtAnswer = (Button)findViewById(R.id.btAnser);
         mBtAnswer.setOnClickListener(new View.OnClickListener() {
@@ -142,5 +169,41 @@ public class StarEyeDetailActivity extends Activity {
             lls.add(dr.generateViewByInstances());
         }
         return lls;
+    }
+
+    private class doPostChartTask extends AsyncTask<String, Void, Boolean> {
+        protected Boolean doInBackground(String... strs)
+        {
+            boolean result = false;
+            try
+            {
+                result = WanEyeUtil.doPostChart(mStarEyeInstance.toString(),strs[0]);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            if(isCancelled())
+            {
+                result = false;
+            }
+            return result;
+        }
+        protected void onPostExecute(Boolean result)
+        {
+            if(isCancelled())
+            {
+                return;
+            }
+            if(result)
+            {
+                Toast.makeText(getBaseContext(),"发送成功！", Toast.LENGTH_SHORT).show();
+                mETComment.setText("");
+            }
+            else
+            {
+                Toast.makeText(getBaseContext(),"发送失败！", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

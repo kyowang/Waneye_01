@@ -15,6 +15,7 @@ import java.net.URLEncoder;
  * Created by wg on 2015/4/8.
  */
 public  class WanEyeUtil {
+    private static final String LTAG = WanEyeUtil.class.getSimpleName();
     private static final String server_address = "112.126.81.167";
     private static final String server_port = "10086";
     private static final String register_uri = "/services/api/user.json";
@@ -57,6 +58,10 @@ public  class WanEyeUtil {
             e.printStackTrace();
         }
         return result;
+    }
+    static public String getStarEyeChartUrl(String instanceId)
+    {
+        return "http://" + WanEyeUtil.server_address + ":" + WanEyeUtil.server_port + WanEyeUtil.getChart_prefix + instanceId + WanEyeUtil.getChart_postfix;
     }
     static public String getBaiduPoiInterface_Url(String key, String city)
     {
@@ -186,6 +191,29 @@ public  class WanEyeUtil {
         body = hu.httpRequestGet(getInstanceUrl() + query.toString(),true);
 
         return body;
+    }
+    static public boolean doPostChart(String instanceId, String comment) throws Exception
+    {
+        if(null == instanceId || null == comment)
+        {
+            throw new NullPointerException("instanceId and comment can not be null!");
+        }
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(LTAG, "doPostChart: instanceId = " + instanceId + " comment = " + comment);
+        }
+        InputStream in = null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"content\":\"");
+        sb.append(comment);
+        sb.append("\"}");
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        in = hu.httpRequestPost(getChartUrl(instanceId),sb.toString(),"application/json", true);
+        if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
+        {
+            return true;
+        }
+        return false;
     }
     static public boolean doLogin(String username, String passwd) throws IOException
     {
