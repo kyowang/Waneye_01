@@ -64,6 +64,8 @@ public class StarEyeDetailActivity extends Activity {
             }
         });
         mBTComment = (Button) findViewById(R.id.bt_send_comment);
+        mBTComment.setFocusable(true);
+        mBTComment.requestFocus();
         mBTComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
