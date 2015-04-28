@@ -146,7 +146,7 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		//private final String[] titles = { "首页", "发现", "消息" };
-		private final String[] titles = { "首页", "附近" };
+		private final String[] titles = { "首页", "附近", "消息" };
 
 		@Override
 		public CharSequence getPageTitle(int position) {

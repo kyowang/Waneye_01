@@ -1,6 +1,7 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -39,6 +41,7 @@ public class StarEyeDetailActivity extends Activity {
     private LinearLayout mLLAnswers;
     private Button mBTComment;
     private EditText mETComment;
+    private Button mBTAddComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +59,26 @@ public class StarEyeDetailActivity extends Activity {
             mStarEyeInstance = mBundleData.getInt("instanceId",0);
             mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
         }
-        mETComment = (EditText) findViewById(R.id.et_comment);
-        mETComment.setOnClickListener(new View.OnClickListener() {
+        mBTAddComment = (Button) findViewById(R.id.bt_comment);
+        mBTAddComment.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mETComment.setFocusable(true);
+            public void onClick(View view) {
+                //Toast.makeText(getBaseContext(),"添加评论",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getBaseContext(),ChartInstanceActivity.class);
+                Bundle bd = new Bundle();
+                bd.putInt("instanceId",mStarEyeInstance);
+                intent.putExtras(bd);
+                startActivity(intent);
+                /*InputMethodManager imm =
+                        (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);*/
             }
         });
+        mETComment = (EditText) findViewById(R.id.et_comment);
+
         mBTComment = (Button) findViewById(R.id.bt_send_comment);
-        mBTComment.setFocusable(true);
-        mBTComment.requestFocus();
+        //mBTComment.setFocusable(true);
+        //mBTComment.requestFocus();
         mBTComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

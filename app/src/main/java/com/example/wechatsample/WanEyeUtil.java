@@ -192,6 +192,27 @@ public  class WanEyeUtil {
 
         return body;
     }
+    static public String doGetChartById(String instanceId) throws  Exception
+    {
+        String result = null;
+        if(null == instanceId)
+        {
+            throw new NullPointerException("instanceId and comment can not be null!");
+        }
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(LTAG, "doGetChartById: instanceId = " + instanceId);
+        }
+        InputStream in = null;
+
+        HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
+        result = hu.httpRequestGet(getChartUrl(instanceId),true);
+        if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
+        {
+            return result;
+        }
+        return null;
+    }
     static public boolean doPostChart(String instanceId, String comment) throws Exception
     {
         if(null == instanceId || null == comment)
