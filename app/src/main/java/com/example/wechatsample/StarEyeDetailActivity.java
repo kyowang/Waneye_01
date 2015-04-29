@@ -1,24 +1,35 @@
 package com.example.wechatsample;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
+import com.waneye.util.ImageCache;
+import com.waneye.util.ImageFetcher;
+import com.waneye.util.RecyclingImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +40,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 
-public class StarEyeDetailActivity extends Activity {
+public class StarEyeDetailActivity extends FragmentActivity {
     private Intent mIntentMe;
     private Bundle mBundleData;
     private TextView mTVDescription;
@@ -43,10 +54,38 @@ public class StarEyeDetailActivity extends Activity {
     private EditText mETComment;
     private Button mBTAddComment;
 
+    private static final String TAG = "StarEyeDetailActivity";
+    private static final String IMAGE_CACHE_DIR = "bitmaps";
+    private int mImageThumbSize;
+    private int mImageThumbSpacing;
+    private ImageAdapter mAdapter;
+    private ImageFetcher mImageFetcher;
+    private ArrayList<String> urls;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_eye_detail);
+        initViews();
+        WindowManager wm = this.getWindowManager();
+        DisplayMetrics  dm = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
+        mImageThumbSize = dm.widthPixels / 3;
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+        mAdapter = new ImageAdapter(StarEyeDetailActivity.this);
+        ImageCache.ImageCacheParams cacheParams =
+                new ImageCache.ImageCacheParams(StarEyeDetailActivity.this, IMAGE_CACHE_DIR);
+
+        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+
+        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
+        mImageFetcher = new ImageFetcher(StarEyeDetailActivity.this, mImageThumbSize);
+        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+    }
+
+    private void initViews()
+    {
         mTVDescription = (TextView) findViewById(R.id.tv_description);
         mTVByUser = (TextView) findViewById(R.id.tv_byuser);
         mIntentMe = getIntent();
@@ -107,10 +146,7 @@ public class StarEyeDetailActivity extends Activity {
                 StarEyeDetailActivity.this.startActivity(intent);
             }
         });
-
-
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -219,6 +255,133 @@ public class StarEyeDetailActivity extends Activity {
             {
                 Toast.makeText(getBaseContext(),"发送失败！", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    /**
+     * The main adapter that backs the GridView. This is fairly standard except the number of
+     * columns in the GridView is used to create a fake top row of empty views as we use a
+     * transparent ActionBar and don't want the real top row of images to start off covered by it.
+     */
+    private class ImageAdapter extends BaseAdapter {
+
+        private final Context mContext;
+        private int mItemHeight = 0;
+        private int mNumColumns = 0;
+        private int mActionBarHeight = 0;
+        private GridView.LayoutParams mImageViewLayoutParams;
+
+
+        public ImageAdapter(Context context) {
+            super();
+            mContext = context;
+            mImageViewLayoutParams = new GridView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            // Calculate ActionBar height
+            TypedValue tv = new TypedValue();
+            if (context.getTheme().resolveAttribute(
+                    android.R.attr.actionBarSize, tv, true)) {
+                mActionBarHeight = TypedValue.complexToDimensionPixelSize(
+                        tv.data, context.getResources().getDisplayMetrics());
+            }
+        }
+        @Override
+        public int getCount() {
+            // If columns have yet to be determined, return no items
+            if (getNumColumns() == 0) {
+                return 0;
+            }
+
+            // Size + number of columns for top empty row
+            return urls.size() + mNumColumns;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position < mNumColumns ?
+                    null : urls.get(position - mNumColumns);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position < mNumColumns ? 0 : position - mNumColumns;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            // Two types of views, the normal ImageView and the top row of empty views
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return (position < mNumColumns) ? 1 : 0;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup container) {
+            //BEGIN_INCLUDE(load_gridview_item)
+            // First check if this is the top row
+            if (position < mNumColumns) {
+                if (convertView == null) {
+                    convertView = new View(mContext);
+                }
+                // Set empty view with height of ActionBar
+                convertView.setLayoutParams(new AbsListView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, mActionBarHeight));
+                return convertView;
+            }
+
+            // Now handle the main ImageView thumbnails
+            ImageView imageView;
+            if (convertView == null) { // if it's not recycled, instantiate and initialize
+                imageView = new RecyclingImageView(mContext);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(mImageViewLayoutParams);
+            } else { // Otherwise re-use the converted view
+                imageView = (ImageView) convertView;
+            }
+
+            // Check the height matches our calculated column width
+            if (imageView.getLayoutParams().height != mItemHeight) {
+                imageView.setLayoutParams(mImageViewLayoutParams);
+            }
+
+            // Finally load the image asynchronously into the ImageView, this also takes care of
+            // setting a placeholder image while the background thread runs
+            mImageFetcher.loadImage(urls.get(position - mNumColumns), imageView);
+            return imageView;
+            //END_INCLUDE(load_gridview_item)
+        }
+
+        /**
+         * Sets the item height. Useful for when we know the column width so the height can be set
+         * to match.
+         *
+         * @param height
+         */
+        public void setItemHeight(int height) {
+            if (height == mItemHeight) {
+                return;
+            }
+            mItemHeight = height;
+            mImageViewLayoutParams =
+                    new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
+            mImageFetcher.setImageSize(height);
+            notifyDataSetChanged();
+        }
+
+        public void setNumColumns(int numColumns) {
+            mNumColumns = numColumns;
+        }
+
+        public int getNumColumns() {
+            return mNumColumns;
         }
     }
 }

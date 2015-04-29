@@ -28,4 +28,5 @@
     <string name="path_captures_path">/waneye/captures/</string>
     <string name="location_spinner_name">选择位置</string>
     <string name="title_activity_chart_instance">交流</string>
+    <string name="no_network_connection_toast">No network connection found</string>
 </resources>
