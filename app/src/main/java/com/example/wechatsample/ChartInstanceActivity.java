@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -32,6 +36,7 @@ public class ChartInstanceActivity extends Activity {
     private final static String LTAG = ChartInstanceActivity.class.getSimpleName();
     private EditText mChartActComment;
     private Button mChartButtonSend;
+    private SimpleAdapter mMyAddapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,22 @@ public class ChartInstanceActivity extends Activity {
         mChartItems = (ListView) findViewById(R.id.lv_chartItems);
         mChartActComment = (EditText)findViewById(R.id.chart_activity_comment);
         mChartButtonSend = (Button) findViewById(R.id.chart_activity_send);
+        mChartButtonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bd = new Bundle();
+                bd.putInt("instanceId", mStarEyeInstance);
+                Intent intent = new Intent(ChartInstanceActivity.this,PostResponseActivity.class);
+                intent.putExtras(bd);
+                //StarEyeDetailActivity.this.startActivity(intent);
+                if(mChartActComment.getText().toString().equals(""))
+                {
+                    Toast.makeText(getBaseContext(),"请输入内容",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new doPostChartTask().execute(mChartActComment.getText().toString());
+            }
+        });
         Intent intent = getIntent();
         if(null != intent)
         {
@@ -106,12 +127,12 @@ public class ChartInstanceActivity extends Activity {
                 return;
             }
             mData = result;
-            SimpleAdapter sa = new SimpleAdapter(getBaseContext(),
+            mMyAddapter = new SimpleAdapter(getBaseContext(),
                     mData,
                     R.layout.chart_me_item,
                     new String[]{ "ownerUserName", "content" },
                     new int[] {R.id.chart_item_me_name, R.id.chart_item_me_comment });
-            mChartItems.setAdapter(sa);
+            mChartItems.setAdapter(mMyAddapter);
         }
     }
     public ArrayList<Map<String,Object>> getDataFromJson(String json) throws JSONException
@@ -136,4 +157,85 @@ public class ChartInstanceActivity extends Activity {
         }
         return al;
     }
+    public Map<String,Object> getSingleDataFromJson(String json) throws JSONException
+    {
+        Map<String,Object> map = null;
+        if(null == json)
+        {
+            return null;
+        }
+        JSONObject jo = new JSONObject(json);
+
+        map = new HashMap<String, Object>();
+        String name = jo.getString("ownerUserName");
+        if(null == name || "" == name || "null" == name)
+        {
+            name = getMyName();
+        }
+        map.put("ownerUserName",name);
+        map.put("ownerId",jo.getInt("ownerId"));
+        map.put("telescopeId",jo.getInt("telescopeId"));
+        map.put("id", jo.getInt("id"));
+        map.put("content",jo.getString("content"));
+
+        return map;
+    }
+    public class doPostChartTask extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... strs)
+        {
+            String result = null;
+            try
+            {
+                result = WanEyeUtil.doPostChart(mStarEyeInstance.toString(), strs[0]);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            if(isCancelled())
+            {
+                result = null;
+            }
+            return result;
+        }
+        protected void onPostExecute(String result)
+        {
+            if(isCancelled())
+            {
+                return;
+            }
+            if(result != null && result != "")
+            {
+                Toast.makeText(getBaseContext(),"发送成功！", Toast.LENGTH_SHORT).show();
+                mChartActComment.setText("");
+                if(BuildConfig.DEBUG)
+                {
+                    Log.d(LTAG,result);
+                }
+                try
+                {
+                    mData.add(getSingleDataFromJson(result));
+                    mMyAddapter.notifyDataSetChanged();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                Toast.makeText(getBaseContext(),"发送失败！", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    protected String getMyName()
+    {
+        String name = "";
+        AppCommonData comData = new AppCommonData(ChartInstanceActivity.this);
+        name  = comData.getString("username","");
+        return name;
+    }
+
+
 }

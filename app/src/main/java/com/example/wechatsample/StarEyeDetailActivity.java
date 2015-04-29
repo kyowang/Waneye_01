@@ -186,10 +186,10 @@ public class StarEyeDetailActivity extends Activity {
         return lls;
     }
 
-    private class doPostChartTask extends AsyncTask<String, Void, Boolean> {
-        protected Boolean doInBackground(String... strs)
+    public class doPostChartTask extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... strs)
         {
-            boolean result = false;
+            String result = null;
             try
             {
                 result = WanEyeUtil.doPostChart(mStarEyeInstance.toString(),strs[0]);
@@ -200,17 +200,17 @@ public class StarEyeDetailActivity extends Activity {
             }
             if(isCancelled())
             {
-                result = false;
+                result = null;
             }
             return result;
         }
-        protected void onPostExecute(Boolean result)
+        protected void onPostExecute(String result)
         {
             if(isCancelled())
             {
                 return;
             }
-            if(result)
+            if(result != null && result != "")
             {
                 Toast.makeText(getBaseContext(),"发送成功！", Toast.LENGTH_SHORT).show();
                 mETComment.setText("");

@@ -213,7 +213,7 @@ public  class WanEyeUtil {
         }
         return null;
     }
-    static public boolean doPostChart(String instanceId, String comment) throws Exception
+    static public String doPostChart(String instanceId, String comment) throws Exception
     {
         if(null == instanceId || null == comment)
         {
@@ -223,18 +223,19 @@ public  class WanEyeUtil {
         {
             Log.d(LTAG, "doPostChart: instanceId = " + instanceId + " comment = " + comment);
         }
+        String result = null;
         InputStream in = null;
         StringBuilder sb = new StringBuilder();
         sb.append("{\"content\":\"");
         sb.append(comment);
         sb.append("\"}");
         HttpUtil hu = new HttpUtil(WanEyeUtil.cookieAuth);
-        in = hu.httpRequestPost(getChartUrl(instanceId),sb.toString(),"application/json", true);
+        result = hu.httpRequestPostReturnString(getChartUrl(instanceId),sb.toString(),"application/json", true);
         if(hu.getResponseCode() == HttpURLConnection.HTTP_OK)
         {
-            return true;
+            return result;
         }
-        return false;
+        return null;
     }
     static public boolean doLogin(String username, String passwd) throws IOException
     {
