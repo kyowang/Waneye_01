@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -28,11 +30,15 @@ public class ChartInstanceActivity extends Activity {
     private Integer mStarEyeInstance = -1;
     private ArrayList<Map<String , Object>> mData;
     private final static String LTAG = ChartInstanceActivity.class.getSimpleName();
+    private EditText mChartActComment;
+    private Button mChartButtonSend;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_instance);
         mChartItems = (ListView) findViewById(R.id.lv_chartItems);
+        mChartActComment = (EditText)findViewById(R.id.chart_activity_comment);
+        mChartButtonSend = (Button) findViewById(R.id.chart_activity_send);
         Intent intent = getIntent();
         if(null != intent)
         {
