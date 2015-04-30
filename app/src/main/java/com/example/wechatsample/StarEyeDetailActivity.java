@@ -1,10 +1,12 @@
 package com.example.wechatsample;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
@@ -14,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -30,6 +33,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.waneye.util.ImageCache;
 import com.waneye.util.ImageFetcher;
 import com.waneye.util.RecyclingImageView;
+import com.waneye.util.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +42,8 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class StarEyeDetailActivity extends FragmentActivity {
@@ -60,17 +66,19 @@ public class StarEyeDetailActivity extends FragmentActivity {
     private int mImageThumbSpacing;
     private ImageAdapter mAdapter;
     private ImageFetcher mImageFetcher;
-    private ArrayList<String> urls;
+    //private ArrayList<String> urls;
+    private ArrayList<Map<String,Object>> answers;
+    private GridView mGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_eye_detail);
-        initViews();
-        WindowManager wm = this.getWindowManager();
-        DisplayMetrics  dm = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
-        mImageThumbSize = dm.widthPixels / 3;
+
+        //WindowManager wm = this.getWindowManager();
+        //DisplayMetrics  dm = new DisplayMetrics();
+        //wm.getDefaultDisplay().getMetrics(dm);
+        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);//dm.widthPixels / 3;
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
         mAdapter = new ImageAdapter(StarEyeDetailActivity.this);
         ImageCache.ImageCacheParams cacheParams =
@@ -82,10 +90,64 @@ public class StarEyeDetailActivity extends FragmentActivity {
         mImageFetcher = new ImageFetcher(StarEyeDetailActivity.this, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+        initViews();
     }
 
     private void initViews()
     {
+        mGridView = (GridView)findViewById(R.id.gridView);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+                // Pause fetcher to ensure smoother scrolling when flinging
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+                    // Before Honeycomb pause image loading on scroll to help with performance
+                    if (!Utils.hasHoneycomb()) {
+                        mImageFetcher.setPauseWork(true);
+                    }
+                } else {
+                    mImageFetcher.setPauseWork(false);
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+            }
+        });
+        // This listener is used to get the final width of the GridView and then calculate the
+        // number of columns and the width of each column. The width of each column is variable
+        // as the GridView has stretchMode=columnWidth. The column width is used to set the height
+        // of each view so we get nice square thumbnails.
+        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mAdapter.getNumColumns() == 0) {
+                            final int numColumns = (int) Math.floor(
+                                    mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            if (numColumns > 0) {
+                                final int columnWidth =
+                                        (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
+                                mAdapter.setNumColumns(numColumns);
+                                mAdapter.setItemHeight(columnWidth);
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
+                                }
+                                if (Utils.hasJellyBean()) {
+                                    mGridView.getViewTreeObserver()
+                                            .removeOnGlobalLayoutListener(this);
+                                } else {
+                                    mGridView.getViewTreeObserver()
+                                            .removeGlobalOnLayoutListener(this);
+                                }
+                            }
+                        }
+                    }
+                });
+        answers = new ArrayList<Map<String, Object>>();
         mTVDescription = (TextView) findViewById(R.id.tv_description);
         mTVByUser = (TextView) findViewById(R.id.tv_byuser);
         mIntentMe = getIntent();
@@ -151,8 +213,23 @@ public class StarEyeDetailActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         new doGetInstancesPicsTask().execute("");
+        mImageFetcher.setExitTasksEarly(false);
+        mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mImageFetcher.setPauseWork(false);
+        mImageFetcher.setExitTasksEarly(true);
+        mImageFetcher.flushCache();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mImageFetcher.closeCache();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -175,32 +252,63 @@ public class StarEyeDetailActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class doGetInstancesPicsTask extends AsyncTask<String, Void, ArrayList<LinearLayout>> {
-        protected ArrayList<LinearLayout> doInBackground(String... strs)
+    private class doGetInstancesPicsTask extends AsyncTask<String, Void, Boolean> {
+        protected Boolean doInBackground(String... strs)
         {
             String result = "";
-            ArrayList<LinearLayout> lls = null;
+            Boolean b = false;
             try
             {
                 result = WanEyeUtil.doGetInstancePics(mStarEyeInstance.toString());
                 Log.d("doGetInstancesPicsTask", result);
-                lls = getLinearLayoutsFromJson(result);
+                //lls = getLinearLayoutsFromJson(result);
+                answers = getListsFromJson(result);
+                b = true;
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
-            return lls;
+            return b;
         }
-        protected void onPostExecute(ArrayList<LinearLayout> views)
+        protected void onPostExecute(Boolean result)
         {
+            if(result)
+            {
+                if(BuildConfig.DEBUG)
+                {
+                    Log.d("","Do update.");
+                }
+                mAdapter.notifyDataSetChanged();
+                Log.d("Debug","" + mGridView.getNumColumns());
+            }
+            /*
             //mJson = result;
             mLLAnswers.removeAllViews();
             for(int i = 0; i < views.size(); i++)
             {
                 mLLAnswers.addView(views.get(i));
-            }
+            }*/
         }
+    }
+    public ArrayList<Map<String , Object>> getListsFromJson(String json) throws JSONException
+    {
+        ArrayList<Map<String , Object>> lists = new ArrayList<Map<String, Object>>();
+        Map<String,Object> item ;
+        //DisplayMetrics dm = getResources().getDisplayMetrics();
+        //final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
+        //Log.d("get: height = ",height+"");
+        JSONArray ja = new JSONArray(json);
+        for( int i = 0; i < ja.length(); i++)
+        {
+            JSONObject jo = ja.getJSONObject(i);
+            item = new HashMap<String, Object>();
+            item.put("ownerUserName",jo.getString("ownerUserName"));
+            item.put("description",jo.getString("description"));
+            item.put("pictureUrl",jo.getString("pictureUrl"));
+            lists.add(item);
+        }
+        return lists;
     }
     public ArrayList<LinearLayout> getLinearLayoutsFromJson(String json) throws JSONException
     {
@@ -293,13 +401,13 @@ public class StarEyeDetailActivity extends FragmentActivity {
             }
 
             // Size + number of columns for top empty row
-            return urls.size() + mNumColumns;
+            return answers.size() + mNumColumns;
         }
 
         @Override
         public Object getItem(int position) {
             return position < mNumColumns ?
-                    null : urls.get(position - mNumColumns);
+                    null : (answers.get(position - mNumColumns)).get("pictureUrl");
         }
 
         @Override
@@ -354,7 +462,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
 
             // Finally load the image asynchronously into the ImageView, this also takes care of
             // setting a placeholder image while the background thread runs
-            mImageFetcher.loadImage(urls.get(position - mNumColumns), imageView);
+            mImageFetcher.loadImage((answers.get(position - mNumColumns)).get("pictureUrl"), imageView);
             return imageView;
             //END_INCLUDE(load_gridview_item)
         }

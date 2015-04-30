@@ -579,16 +579,30 @@ public class ImageCache {
      */
     public static String hashKeyForDisk(String key) {
         String cacheKey;
+        String handled = ImageCache.getRidOfParaFromUrl(key);
         try {
             final MessageDigest mDigest = MessageDigest.getInstance("MD5");
-            mDigest.update(key.getBytes());
+            mDigest.update(handled.getBytes());
             cacheKey = bytesToHexString(mDigest.digest());
         } catch (NoSuchAlgorithmException e) {
-            cacheKey = String.valueOf(key.hashCode());
+            cacheKey = String.valueOf(handled.hashCode());
         }
         return cacheKey;
     }
-
+    private static String getRidOfParaFromUrl(String key)
+    {
+        String result = key;
+        int i = key.indexOf("?");
+        if(i > 0)
+        {
+            result = key.substring(0,i);
+            if(BuildConfig.DEBUG)
+            {
+                Log.d("URL after handle:",result);
+            }
+        }
+        return result;
+    }
     private static String bytesToHexString(byte[] bytes) {
         // http://stackoverflow.com/questions/332079
         StringBuilder sb = new StringBuilder();
