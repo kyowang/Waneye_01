@@ -31,8 +31,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 
-import com.example.android.common.logger.Log;
-import com.example.android.displayingbitmaps.BuildConfig;
+import android.util.Log;
+import com.example.wechatsample.BuildConfig;
 
 import java.io.File;
 import java.io.FileDescriptor;

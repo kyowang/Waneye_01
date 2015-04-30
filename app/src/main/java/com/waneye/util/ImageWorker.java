@@ -28,8 +28,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.ImageView;
 
-import com.example.android.common.logger.Log;
-import com.example.android.displayingbitmaps.BuildConfig;
+import android.util.Log;
+import com.example.wechatsample.BuildConfig;
 
 import java.lang.ref.WeakReference;
 

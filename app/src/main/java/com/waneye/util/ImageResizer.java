@@ -23,8 +23,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-import com.example.android.common.logger.Log;
-import com.example.android.displayingbitmaps.BuildConfig;
+import android.util.Log;
+import com.example.wechatsample.BuildConfig;
 
 import java.io.FileDescriptor;
 
