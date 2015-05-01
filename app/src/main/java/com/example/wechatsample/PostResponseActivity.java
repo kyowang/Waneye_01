@@ -139,7 +139,7 @@ public class PostResponseActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if(CHOSE_ALBUM == requestCode && resultCode == RESULT_OK) //from local image
         {
-            Toast.makeText(getBaseContext(),"result : " + data.getData(),Toast.LENGTH_LONG).show();
+            //Toast.makeText(getBaseContext(),"result : " + data.getData(),Toast.LENGTH_LONG).show();
             Uri uri = data.getData();
             if (null == uri)
             {
@@ -363,6 +363,7 @@ public class PostResponseActivity extends Activity {
             else if("OK" == result)
             {
                 Toast.makeText(getApplicationContext(), "发送成功！", Toast.LENGTH_LONG).show();
+                finish();
             }
         }
     }

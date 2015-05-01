@@ -44,6 +44,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class StarEyeDetailActivity extends FragmentActivity {
@@ -64,10 +65,10 @@ public class StarEyeDetailActivity extends FragmentActivity {
     private static final String IMAGE_CACHE_DIR = "bitmaps";
     private int mImageThumbSize;
     private int mImageThumbSpacing;
-    private ImageAdapter mAdapter;
+    private ImageAdapter mAdapter = null;
     private ImageFetcher mImageFetcher;
     //private ArrayList<String> urls;
-    private ArrayList<Map<String,Object>> answers;
+    private ArrayList<HashMap<String,Object>> answers;
     private GridView mGridView;
 
     @Override
@@ -80,7 +81,8 @@ public class StarEyeDetailActivity extends FragmentActivity {
         //wm.getDefaultDisplay().getMetrics(dm);
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);//dm.widthPixels / 3;
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-        mAdapter = new ImageAdapter(StarEyeDetailActivity.this);
+        answers = new ArrayList<HashMap<String, Object>>();
+        mAdapter = new ImageAdapter(StarEyeDetailActivity.this,answers);
         ImageCache.ImageCacheParams cacheParams =
                 new ImageCache.ImageCacheParams(StarEyeDetailActivity.this, IMAGE_CACHE_DIR);
 
@@ -147,7 +149,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
                         }
                     }
                 });
-        answers = new ArrayList<Map<String, Object>>();
+
         mTVDescription = (TextView) findViewById(R.id.tv_description);
         mTVByUser = (TextView) findViewById(R.id.tv_byuser);
         mIntentMe = getIntent();
@@ -196,7 +198,6 @@ public class StarEyeDetailActivity extends FragmentActivity {
                 new doPostChartTask().execute(mETComment.getText().toString());
             }
         });
-        mLLAnswers = (LinearLayout)findViewById(R.id.llAnwsers);
         mBtAnswer = (Button)findViewById(R.id.btAnser);
         mBtAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +215,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
         super.onResume();
         new doGetInstancesPicsTask().execute("");
         mImageFetcher.setExitTasksEarly(false);
-        mAdapter.notifyDataSetChanged();
+        //mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -262,7 +263,10 @@ public class StarEyeDetailActivity extends FragmentActivity {
                 result = WanEyeUtil.doGetInstancePics(mStarEyeInstance.toString());
                 Log.d("doGetInstancesPicsTask", result);
                 //lls = getLinearLayoutsFromJson(result);
-                answers = getListsFromJson(result);
+                //answers = getListsFromJson(result);
+                answers.clear();
+                ArrayList<HashMap<String,Object>> temp = getListsFromJson(result);
+                answers.addAll(temp);
                 b = true;
             }
             catch (Exception e)
@@ -277,24 +281,18 @@ public class StarEyeDetailActivity extends FragmentActivity {
             {
                 if(BuildConfig.DEBUG)
                 {
-                    Log.d("","Do update.");
+                    Log.d("", "Do update.");
                 }
+                //mAdapter.setData(answers);
                 mAdapter.notifyDataSetChanged();
                 Log.d("Debug","" + mGridView.getNumColumns());
             }
-            /*
-            //mJson = result;
-            mLLAnswers.removeAllViews();
-            for(int i = 0; i < views.size(); i++)
-            {
-                mLLAnswers.addView(views.get(i));
-            }*/
         }
     }
-    public ArrayList<Map<String , Object>> getListsFromJson(String json) throws JSONException
+    public ArrayList<HashMap<String , Object>> getListsFromJson(String json) throws JSONException
     {
-        ArrayList<Map<String , Object>> lists = new ArrayList<Map<String, Object>>();
-        Map<String,Object> item ;
+        ArrayList<HashMap<String , Object>> lists = new ArrayList<HashMap<String, Object>>();
+        HashMap<String,Object> item ;
         //DisplayMetrics dm = getResources().getDisplayMetrics();
         //final int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
         //Log.d("get: height = ",height+"");
@@ -376,43 +374,36 @@ public class StarEyeDetailActivity extends FragmentActivity {
         private final Context mContext;
         private int mItemHeight = 0;
         private int mNumColumns = 0;
-        private int mActionBarHeight = 0;
+
+        public void setData(ArrayList<HashMap<String, Object>> data) {
+            this.data = data;
+        }
+
+        private ArrayList<HashMap<String,Object>> data;
         private GridView.LayoutParams mImageViewLayoutParams;
 
 
-        public ImageAdapter(Context context) {
+        public ImageAdapter(Context context, ArrayList<HashMap<String,Object>> al) {
             super();
             mContext = context;
+            data = al;
             mImageViewLayoutParams = new GridView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            // Calculate ActionBar height
-            TypedValue tv = new TypedValue();
-            if (context.getTheme().resolveAttribute(
-                    android.R.attr.actionBarSize, tv, true)) {
-                mActionBarHeight = TypedValue.complexToDimensionPixelSize(
-                        tv.data, context.getResources().getDisplayMetrics());
-            }
+
         }
         @Override
         public int getCount() {
-            // If columns have yet to be determined, return no items
-            if (getNumColumns() == 0) {
-                return 0;
-            }
-
-            // Size + number of columns for top empty row
-            return answers.size() + mNumColumns;
+            return data.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return position < mNumColumns ?
-                    null : (answers.get(position - mNumColumns)).get("pictureUrl");
+            return (data.get(position)).get("pictureUrl");
         }
 
         @Override
         public long getItemId(int position) {
-            return position < mNumColumns ? 0 : position - mNumColumns;
+            return position;
         }
 
         @Override
@@ -423,7 +414,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
 
         @Override
         public int getItemViewType(int position) {
-            return (position < mNumColumns) ? 1 : 0;
+            return 0;
         }
 
         @Override
@@ -434,16 +425,6 @@ public class StarEyeDetailActivity extends FragmentActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup container) {
             //BEGIN_INCLUDE(load_gridview_item)
-            // First check if this is the top row
-            if (position < mNumColumns) {
-                if (convertView == null) {
-                    convertView = new View(mContext);
-                }
-                // Set empty view with height of ActionBar
-                convertView.setLayoutParams(new AbsListView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, mActionBarHeight));
-                return convertView;
-            }
 
             // Now handle the main ImageView thumbnails
             ImageView imageView;
@@ -462,7 +443,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
 
             // Finally load the image asynchronously into the ImageView, this also takes care of
             // setting a placeholder image while the background thread runs
-            mImageFetcher.loadImage((answers.get(position - mNumColumns)).get("pictureUrl"), imageView);
+            mImageFetcher.loadImage((data.get(position)).get("pictureUrl"), imageView);
             return imageView;
             //END_INCLUDE(load_gridview_item)
         }
