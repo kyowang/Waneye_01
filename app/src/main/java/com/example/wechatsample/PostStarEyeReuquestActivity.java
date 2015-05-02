@@ -657,6 +657,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             if(result == HttpURLConnection.HTTP_OK)
             {
                 mTV.setText("请求发送成功！");
+                Toast.makeText(PostStarEyeReuquestActivity.this,"请求发送成功!",Toast.LENGTH_SHORT).show();
+                finish();
             }
             else if(result == HttpURLConnection.HTTP_UNAUTHORIZED)
             {

@@ -107,6 +107,7 @@
             android:name=".StarEyeDetailActivity"
             android:label="@string/title_activity_star_eye_detail"
             android:screenOrientation="portrait"
+            android:alwaysRetainTaskState="true"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
         </activity>
         <activity
@@ -118,6 +119,14 @@
             android:name=".ChartInstanceActivity"
             android:label="@string/title_activity_chart_instance"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+        </activity>
+        <activity
+            android:name=".ImageDetailActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".StarEyeDetailActivity" >
+            <!-- android:theme="@style/AppThemeDark.FullScreen" > -->
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".StarEyeDetailActivity" />
         </activity>
     </application>
 

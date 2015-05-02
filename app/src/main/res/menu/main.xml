@@ -9,6 +9,12 @@
         android:showAsAction="ifRoom|collapseActionView"
         android:title="@string/action_search"/> -->
     <item
+        android:id="@+id/action_new"
+        android:icon="@drawable/tasks_cccccc_64"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_plus"
+        ></item>
+    <item
         android:id="@+id/action_plus"
         android:actionProviderClass="com.example.wechatsample.PlusActionProvider"
         android:icon="@drawable/actionbar_add_icon"

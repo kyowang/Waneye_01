@@ -146,7 +146,7 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		//private final String[] titles = { "首页", "发现", "消息" };
-		private final String[] titles = { "首页", "附近", "消息" };
+		private final String[] titles = { "首页", "附近" };
 
 		@Override
 		public CharSequence getPageTitle(int position) {
@@ -192,16 +192,15 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //Toast.makeText(this,"come on 1",Toast.LENGTH_SHORT).show();
-        //switch(item.getItemId())
-        //{
-        //    case R.id.action_login:
-        //        //Toast.makeText(this,"come on",Toast.LENGTH_SHORT).show();
-        //        startActivity(new Intent(this,LoginActivity.class));
-        //        return true;
-        //    default:
-        //        return super.onOptionsItemSelected(item);
-        //}
-        return false;
+        switch(item.getItemId())
+        {
+            case R.id.action_new:
+                //Toast.makeText(this,"come on",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, PostStarEyeReuquestActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

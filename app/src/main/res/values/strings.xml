@@ -4,6 +4,7 @@
     <string name="app_name">万眼</string>
     <string name="action_search">搜索</string>
     <string name="action_plus">功能</string>
+    <string name="action_new">新请求</string>
     <string name="action_personal">个人中心</string>
     <string name="action_login">登录</string>
     <string name="action_register">注册</string>
@@ -28,5 +29,8 @@
     <string name="path_captures_path">/waneye/captures/</string>
     <string name="location_spinner_name">选择位置</string>
     <string name="title_activity_chart_instance">交流</string>
+    <string name="clear_cache_menu">Clear Caches</string>
+    <string name="clear_cache_complete_toast">Caches have been cleared</string>
+    <string name="imageview_description">Image Thumbnail</string>
     <string name="no_network_connection_toast">No network connection found</string>
 </resources>

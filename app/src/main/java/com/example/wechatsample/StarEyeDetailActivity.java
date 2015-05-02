@@ -2,6 +2,7 @@ package com.example.wechatsample;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,8 +49,8 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class StarEyeDetailActivity extends FragmentActivity {
-    private Intent mIntentMe;
+public class StarEyeDetailActivity extends FragmentActivity implements AdapterView.OnItemClickListener {
+    private static Intent mIntentMe;
     private Bundle mBundleData;
     private TextView mTVDescription;
     private String mUserName;
@@ -67,7 +69,6 @@ public class StarEyeDetailActivity extends FragmentActivity {
     private int mImageThumbSpacing;
     private ImageAdapter mAdapter = null;
     private ImageFetcher mImageFetcher;
-    //private ArrayList<String> urls;
     private ArrayList<HashMap<String,Object>> answers;
     private GridView mGridView;
 
@@ -75,7 +76,10 @@ public class StarEyeDetailActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_eye_detail);
-
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(TAG,"onCreate");
+        }
         //WindowManager wm = this.getWindowManager();
         //DisplayMetrics  dm = new DisplayMetrics();
         //wm.getDefaultDisplay().getMetrics(dm);
@@ -92,13 +96,14 @@ public class StarEyeDetailActivity extends FragmentActivity {
         mImageFetcher = new ImageFetcher(StarEyeDetailActivity.this, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
-        initViews();
+        initViews(savedInstanceState);
     }
 
-    private void initViews()
+    private void initViews(Bundle savedInstanceState)
     {
         mGridView = (GridView)findViewById(R.id.gridView);
         mGridView.setAdapter(mAdapter);
+        mGridView.setOnItemClickListener(this);
         mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -152,10 +157,25 @@ public class StarEyeDetailActivity extends FragmentActivity {
 
         mTVDescription = (TextView) findViewById(R.id.tv_description);
         mTVByUser = (TextView) findViewById(R.id.tv_byuser);
-        mIntentMe = getIntent();
-        mBundleData = mIntentMe.getExtras();
-        if(! mBundleData.isEmpty())
+        Intent i = getIntent();
+        //mIntentMe = getIntent();
+        mBundleData = i.getExtras();
+        if(mBundleData != null && ! mBundleData.isEmpty())
         {
+            if(BuildConfig.DEBUG)
+            {
+                Log.d(TAG,"use intent data");
+            }
+            mIntentMe = i;
+            mUserName = mBundleData.getString("username","");
+            mTVDescription.setText(mBundleData.getCharSequence("description"));
+            mTVByUser.setText("By:" + mUserName);
+            mStarEyeInstance = mBundleData.getInt("instanceId",0);
+            mLatLng = new LatLng(mBundleData.getDouble("latitude"),mBundleData.getDouble("longitude"));
+        }
+        else if(mIntentMe != null)
+        {
+            mBundleData = mIntentMe.getExtras();
             mUserName = mBundleData.getString("username","");
             mTVDescription.setText(mBundleData.getCharSequence("description"));
             mTVByUser.setText("By:" + mUserName);
@@ -187,12 +207,11 @@ public class StarEyeDetailActivity extends FragmentActivity {
             public void onClick(View v) {
                 Bundle bd = new Bundle();
                 bd.putInt("instanceId", mStarEyeInstance);
-                Intent intent = new Intent(StarEyeDetailActivity.this,PostResponseActivity.class);
+                Intent intent = new Intent(StarEyeDetailActivity.this, PostResponseActivity.class);
                 intent.putExtras(bd);
                 //StarEyeDetailActivity.this.startActivity(intent);
-                if(mETComment.getText().toString().equals(""))
-                {
-                    Toast.makeText(getBaseContext(),"请输入内容",Toast.LENGTH_SHORT).show();
+                if (mETComment.getText().toString().equals("")) {
+                    Toast.makeText(getBaseContext(), "请输入内容", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 new doPostChartTask().execute(mETComment.getText().toString());
@@ -204,7 +223,7 @@ public class StarEyeDetailActivity extends FragmentActivity {
             public void onClick(View v) {
                 Bundle bd = new Bundle();
                 bd.putInt("instanceId", mStarEyeInstance);
-                Intent intent = new Intent(StarEyeDetailActivity.this,PostResponseActivity.class);
+                Intent intent = new Intent(StarEyeDetailActivity.this, PostResponseActivity.class);
                 intent.putExtras(bd);
                 StarEyeDetailActivity.this.startActivity(intent);
             }
@@ -213,22 +232,54 @@ public class StarEyeDetailActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(TAG,"onResume");
+        }
         new doGetInstancesPicsTask().execute("");
         mImageFetcher.setExitTasksEarly(false);
         //mAdapter.notifyDataSetChanged();
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(TAG,"onPause");
+        }
         mImageFetcher.setPauseWork(false);
         mImageFetcher.setExitTasksEarly(true);
         mImageFetcher.flushCache();
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(BuildConfig.DEBUG)
+        {
+            Log.d("Debug:","onSaveInstanceState");
+        }
+        outState.putString("username", mUserName);
+        outState.putString("description", mTVDescription.getText().toString());
+        outState.putInt("instanceId", mStarEyeInstance);
+        outState.putDouble("latitude", mLatLng.latitude);
+        outState.putDouble("longitude", mLatLng.longitude);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
+        if(BuildConfig.DEBUG)
+        {
+            Log.d(TAG,"onDestroy");
+        }
         mImageFetcher.closeCache();
     }
     @Override
@@ -253,6 +304,25 @@ public class StarEyeDetailActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        final Intent i = new Intent(StarEyeDetailActivity.this, ImageDetailActivity.class);
+        //i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
+        Bundle bd = new Bundle();
+        bd.putInt(ImageDetailActivity.EXTRA_IMAGE,(int)id);
+        bd.putSerializable("IMAGE_LIST",answers);
+        i.putExtras(bd);
+        if (Utils.hasJellyBean()) {
+            // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
+            // show plus the thumbnail image in GridView is cropped. so using
+            // makeScaleUpAnimation() instead.
+            ActivityOptions options =
+                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+            StarEyeDetailActivity.this.startActivity(i, options.toBundle());
+        } else {
+            startActivity(i);
+        }
+    }
     private class doGetInstancesPicsTask extends AsyncTask<String, Void, Boolean> {
         protected Boolean doInBackground(String... strs)
         {
