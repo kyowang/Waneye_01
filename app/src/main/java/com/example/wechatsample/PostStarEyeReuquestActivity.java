@@ -103,6 +103,7 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
     TextView mTV = null;
     boolean isFirstLoc = true;
     LatLng mLatLngTarget = null;
+    String mAddressName = null;
     /**
      * 构造广播监听类，监听 SDK key 验证以及网络异常广播
      */
@@ -190,8 +191,19 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
                     return;
                 }
                 mTV.setVisibility(View.GONE);
-                StarEyeInstance sei = new StarEyeInstance(mLatLngTarget.latitude,mLatLngTarget.longitude,etDescription.getText().toString());
-                new doPostStarEyeInstanceTask().execute(sei);
+                btPostRequest.setText("发送中......");
+                btPostRequest.setEnabled(false);
+
+                if(null == mAddressName)
+                {
+                    //mAddressName = "位置地址";
+                    new DoBaiduCodecTask().execute(mLatLngTarget);
+                }
+                else
+                {
+                    StarEyeInstance sei = new StarEyeInstance(mLatLngTarget.latitude,mLatLngTarget.longitude,etDescription.getText().toString(),mAddressName);
+                    new doPostStarEyeInstanceTask().execute(sei);
+                }
             }
         });
         etDescription = (EditText)findViewById(R.id.et_description);
@@ -420,6 +432,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         public void onMapClick(LatLng point)
         {
             //Toast.makeText(getBaseContext(),point.toString(),Toast.LENGTH_LONG).show();
+            // let addressName invalid, due to new place chosed by click map. need BaiduCodec to get AddressName.
+            mAddressName = null;
             Log.d(LTAG,point.toString());
             //在地图上添加Marker，并显示
             setTargetMarker(point);
@@ -428,6 +442,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
         public boolean onMapPoiClick(MapPoi poi)
         {
             //Toast.makeText(getBaseContext(),poi.toString(),Toast.LENGTH_LONG).show();
+            // let addressName invalid, due to new place chosed by click map. need BaiduCodec to get AddressName.
+            mAddressName = null;
             Log.d(LTAG,poi.toString());
             //在地图上添加Marker，并显示
             setTargetMarker(poi.getPosition());
@@ -522,7 +538,75 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             return;
         }
     }
+    private class DoBaiduCodecTask extends AsyncTask<LatLng , Void, String> {
+        protected String doInBackground(LatLng... urls)
+        {
+            String result = "";
+            try
+            {
+                result = WanEyeUtil.doBaiduCodec(String.valueOf(urls[0].latitude), String.valueOf(urls[0].longitude));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+        protected void onPostExecute(String result)
+        {
+            if(isCancelled())
+            {
+                return;
+            }
+            //TODO parse json from result.
+            if("" == result)
+            {
+                //Toast.makeText(getBaseContext(),"搜索失败",Toast.LENGTH_LONG).show();
+                if(BuildConfig.DEBUG)
+                {
+                    Log.d(LTAG,"搜索失败");
+                }
+                return;
+            }
+            if(BuildConfig.DEBUG)
+            {
+                Log.d(LTAG,result);
+            }
 
+            try
+            {
+                mAddressName = parseAddressName(result);
+                //locAddapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.spinner_item,parseSearchJson(result));
+                if(null != mAddressName)
+                {
+                    StarEyeInstance sei = new StarEyeInstance(mLatLngTarget.latitude,mLatLngTarget.longitude,etDescription.getText().toString(),mAddressName);
+                    new doPostStarEyeInstanceTask().execute(sei);
+                }
+                else
+                {
+                    //failed to post new request.
+                    Toast.makeText(getBaseContext(),"地址查找失败，请重新选择一个位置",Toast.LENGTH_LONG).show();
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return;
+            }
+            return;
+        }
+    }
+    public String parseAddressName(String json) throws  JSONException
+    {
+        JSONObject jo = new JSONObject(json);
+        int status = jo.getInt("status");
+        if(status != 0)
+        {
+            return null;
+        }
+        String addName = jo.getJSONObject("result").getString("formatted_address");
+        return addName;
+    }
     public ArrayList<String> parseSearchJson(String result) throws JSONException
     {
         ArrayList<String> as = new ArrayList<String>();
@@ -589,6 +673,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
                 {
                     LatLng ll = getLatLngFromJson(mSearchResutlJson,index);
                     Log.d(LTAG,ll.toString());
+                    TextView tv =  (TextView)view;
+                    mAddressName = tv.getText().toString();
                     setTargetMarker(ll);
                 }
                 catch (JSONException e)
@@ -657,6 +743,8 @@ public class PostStarEyeReuquestActivity extends Activity implements OnGetPoiSea
             if(result == HttpURLConnection.HTTP_OK)
             {
                 mTV.setText("请求发送成功！");
+                btPostRequest.setText("提交");
+                btPostRequest.setEnabled(true);
                 Toast.makeText(PostStarEyeReuquestActivity.this,"请求发送成功!",Toast.LENGTH_SHORT).show();
                 finish();
             }

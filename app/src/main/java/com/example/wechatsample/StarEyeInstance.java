@@ -8,13 +8,15 @@ public class StarEyeInstance {
     private Double longitude;
     private Integer status = 1;
     private String description;
+    private String addressName;
     public static final String contentType = "application/json";
 
-    public StarEyeInstance(Double latitude, Double longitude,String desc)
+    public StarEyeInstance(Double latitude, Double longitude,String desc, String addName)
     {
         StarEyeInstance.this.latitude = latitude;
         StarEyeInstance.this.longitude = longitude;
         StarEyeInstance.this.description = desc;
+        StarEyeInstance.this.addressName = addName;
     }
     public String toString()
     {
@@ -25,7 +27,9 @@ public class StarEyeInstance {
         sb.append(this.longitude.toString());
         sb.append(",\"status\":");
         sb.append(this.status.toString());
-        sb.append(",\"description\":\"");
+        sb.append(",\"header\":\"");
+        sb.append(this.addressName);
+        sb.append("\",\"description\":\"");
         sb.append(this.description);
         sb.append("\"}");
         return sb.toString();

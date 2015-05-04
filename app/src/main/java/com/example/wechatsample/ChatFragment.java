@@ -438,7 +438,7 @@ public class ChatFragment extends Fragment {
         {
             JSONObject jo = ja.getJSONObject(i);
             al.add(new RequestEntity(
-                    "中山路1097号附近",
+                    jo.getString("header"),
                     jo.getString("description"),
                     jo.getString("ownerUserName"),
                     jo.getInt("ownerId"),

@@ -57,6 +57,8 @@ public class ChartInstanceActivity extends Activity {
                     Toast.makeText(getBaseContext(),"请输入内容",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mChartButtonSend.setText("发送中......");
+                mChartButtonSend.setEnabled(false);
                 new doPostChartTask().execute(mChartActComment.getText().toString());
             }
         });
@@ -226,6 +228,8 @@ public class ChartInstanceActivity extends Activity {
             {
                 Toast.makeText(getBaseContext(),"发送失败！", Toast.LENGTH_SHORT).show();
             }
+            mChartButtonSend.setText("发送");
+            mChartButtonSend.setEnabled(true);
         }
     }
 

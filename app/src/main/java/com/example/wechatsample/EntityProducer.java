@@ -51,6 +51,7 @@ public class EntityProducer {
                 RequestEntityLayout xx = (RequestEntityLayout)v;
                 RequestEntity re = xx.getmRequestEntity();
                 Bundle bd = new Bundle();
+                bd.putCharSequence("addName",re.getmAddrName());
                 bd.putCharSequence("description", re.getmDescription());
                 bd.putCharSequence("username",re.getmOwnerName());
                 bd.putInt("instanceId",re.getmInstanceId());
@@ -84,7 +85,8 @@ public class EntityProducer {
         TextView tv = new TextView(mContext);
         tv.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
         //tv.setText(re.getmAddrName());
-        tv.setText("Lat:" + re.getmLatitude() +", Long:" + re.getmLongitude());
+        tv.setText(re.getmAddrName());
+        //tv.setText("Lat:" + re.getmLatitude() +", Long:" + re.getmLongitude());
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,16);
         //description
         TextView tvDesc = new TextView(mContext);

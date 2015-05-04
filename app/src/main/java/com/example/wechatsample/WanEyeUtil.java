@@ -37,6 +37,8 @@ public  class WanEyeUtil {
     private static final String getBaiduPoiInterface_uri_midfix2 = "&region=";
     private static final String getBaiduPoiInterface_uri_postfix = "&output=json&ak=ZHES86tX8Ij6ZT2aMXKz5wV7";
 
+    private static final String BaiduCoderInterface_uri_prefix = "http://api.map.baidu.com/geocoder/v2/?ak=ZHES86tX8Ij6ZT2aMXKz5wV7&output=json&pois=0&location=";
+
     public static String getCookieAuth() {
         return cookieAuth;
     }
@@ -58,6 +60,10 @@ public  class WanEyeUtil {
             e.printStackTrace();
         }
         return result;
+    }
+    static public String getBaiduCoderUrl(String lat, String lng)
+    {
+        return WanEyeUtil.BaiduCoderInterface_uri_prefix + lat + "," + lng;
     }
     static public String getStarEyeChartUrl(String instanceId)
     {
@@ -116,6 +122,17 @@ public  class WanEyeUtil {
         String result = "";
         HttpUtil hu = new HttpUtil();
         result = hu.httpRequestGet(WanEyeUtil.getBaiduPoiInterface_Url(key, city), false);
+        if(hu.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            return "";
+        }
+        return result;
+    }
+    static public String doBaiduCodec(String lat,String lng) throws  IOException
+    {
+        Log.d("WanEyeUtil","doBaiduCodec");
+        String result = "";
+        HttpUtil hu = new HttpUtil();
+        result = hu.httpRequestGet(WanEyeUtil.getBaiduCoderUrl(lat, lng), false);
         if(hu.getResponseCode() != HttpURLConnection.HTTP_OK) {
             return "";
         }

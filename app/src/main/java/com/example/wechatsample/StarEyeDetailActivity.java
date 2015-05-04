@@ -214,6 +214,8 @@ public class StarEyeDetailActivity extends FragmentActivity implements AdapterVi
                     Toast.makeText(getBaseContext(), "请输入内容", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mBTComment.setText("发送中......");
+                mBTComment.setEnabled(false);
                 new doPostChartTask().execute(mETComment.getText().toString());
             }
         });
@@ -431,6 +433,8 @@ public class StarEyeDetailActivity extends FragmentActivity implements AdapterVi
             {
                 Toast.makeText(getBaseContext(),"发送失败！", Toast.LENGTH_SHORT).show();
             }
+            mBTComment.setText("发送");
+            mBTComment.setEnabled(true);
         }
     }
 
